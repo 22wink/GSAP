@@ -1,0 +1,3365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VisionPro - 重新定义你眼中的世界</title>
+  <!-- 引入外部资源 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/Draggable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+    
+    /* 全局滚动条样式 */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #2EC4B6;
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #1aa397;
+    }
+    
+    /* 锚点平滑滚动 */
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    /* 全局组件样式重置 */
+    nav-bar {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1.5rem 2rem;
+      z-index: 1000;
+      transition: all 0.3s ease;
+      background-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav-bar></nav-bar>
+  
+  <!-- 英雄区域 -->
+  <hero-section></hero-section>
+  
+  <!-- 产品展示 -->
+  <section id="showcase">
+    <product-showcase></product-showcase>
+  </section>
+  
+  <!-- 特性介绍 -->
+  <section id="features">
+    <features-section></features-section>
+  </section>
+  
+  <!-- 3D旋转展示 -->
+  <rotation-demo></rotation-demo>
+  
+  <!-- 交互体验 -->
+  <interaction-demo></interaction-demo>
+  
+  <!-- 场景展示 -->
+  <section id="scenarios">
+    <scenarios-section></scenarios-section>
+  </section>
+  
+  <!-- 数据统计 -->
+  <stats-section></stats-section>
+  
+  <!-- 价格方案 -->
+  <section id="pricing">
+    <pricing-section></pricing-section>
+  </section>
+  
+  <!-- 用户评价 -->
+  <section id="reviews">
+    <reviews-section></reviews-section>
+  </section>
+  
+  <!-- 订阅预订 -->
+  <section id="subscribe">
+    <subscribe-section></subscribe-section>
+  </section>
+  
+  <!-- 页脚 -->
+  <footer-section></footer-section>
+  
+  <script>
+    // 导航栏组件
+    class NavBar extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+          <style>
+            .nav-container {
+              max-width: 1200px;
+              margin: 0 auto;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            }
+            
+            .logo {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              text-decoration: none;
+            }
+            
+            .logo-text {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 700;
+              font-size: 1.5rem;
+              color: white;
+              transition: color 0.3s ease;
+            }
+            
+            .nav-links {
+              display: flex;
+              gap: 2rem;
+            }
+            
+            .nav-link {
+              color: white;
+              text-decoration: none;
+              font-weight: 500;
+              transition: color 0.3s ease, transform 0.3s ease;
+              position: relative;
+            }
+            
+            .nav-link:hover {
+              color: #2EC4B6;
+              transform: translateY(-2px);
+            }
+            
+            .nav-link::after {
+              content: '';
+              position: absolute;
+              width: 0;
+              height: 2px;
+              bottom: -4px;
+              left: 0;
+              background-color: #2EC4B6;
+              transition: width 0.3s ease;
+            }
+            
+            .nav-link:hover::after {
+              width: 100%;
+            }
+            
+            .cta-button {
+              background-color: #2EC4B6;
+              color: white;
+              border: none;
+              padding: 0.75rem 1.5rem;
+              border-radius: 30px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+              text-decoration: none;
+            }
+            
+            .cta-button:hover {
+              background-color: #1aa397;
+              transform: translateY(-2px);
+              box-shadow: 0 4px 12px rgba(46, 196, 182, 0.3);
+            }
+            
+            .mobile-menu-button {
+              display: none;
+              background: none;
+              border: none;
+              color: white;
+              font-size: 1.5rem;
+              cursor: pointer;
+            }
+            
+            @media (max-width: 768px) {
+              .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: #0A2463;
+                flex-direction: column;
+                padding: 1rem 2rem;
+                gap: 1rem;
+              }
+              
+              .nav-links.active {
+                display: flex;
+              }
+              
+              .mobile-menu-button {
+                display: block;
+              }
+            }
+          </style>
+          <div class="nav-container">
+            <a href="#" class="logo">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="20" cy="20" r="18" stroke="#2EC4B6" stroke-width="4"/>
+                <path d="M12 20H28M20 12V28" stroke="#2EC4B6" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+              <span class="logo-text">VisionPro</span>
+            </a>
+            
+            <div class="nav-links">
+              <a href="#features" class="nav-link">特性</a>
+              <a href="#showcase" class="nav-link">产品展示</a>
+              <a href="#scenarios" class="nav-link">应用场景</a>
+              <a href="#pricing" class="nav-link">价格</a>
+              <a href="#reviews" class="nav-link">用户评价</a>
+            </div>
+            
+            <a href="#subscribe" class="cta-button">立即预订</a>
+            <button class="mobile-menu-button">
+              <i class="fa fa-bars"></i>
+            </button>
+          </div>
+        `;
+      }
+      
+      connectedCallback() {
+        const mobileMenuButton = this.shadowRoot.querySelector('.mobile-menu-button');
+        const navLinks = this.shadowRoot.querySelector('.nav-links');
+        
+        mobileMenuButton.addEventListener('click', () => {
+          navLinks.classList.toggle('active');
+        });
+        
+        // 滚动时改变导航栏样式
+        window.addEventListener('scroll', () => {
+          if (window.scrollY > 50) {
+            this.style.backgroundColor = '#0A2463';
+            this.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+          } else {
+            this.style.backgroundColor = 'transparent';
+            this.style.boxShadow = 'none';
+          }
+        });
+      }
+    }
+    customElements.define('nav-bar', NavBar);
+    
+    // 英雄区域组件
+    class HeroSection extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host {
+              display: block;
+              height: 100vh;
+              position: relative;
+              overflow: hidden;
+            }
+            
+            .hero-container {
+              height: 100%;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              text-align: center;
+              padding: 0 2rem;
+              position: relative;
+              z-index: 1;
+            }
+            
+            .bg-gradient {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: linear-gradient(135deg, #0A2463 0%, #3E92CC 100%);
+              z-index: -1;
+            }
+            
+            .floating-elements {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              z-index: 0;
+            }
+            
+            .floating-element {
+              position: absolute;
+              border-radius: 50%;
+              background: rgba(46, 196, 182, 0.1);
+              filter: blur(50px);
+            }
+            
+            .hero-title {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 800;
+              font-size: clamp(2.5rem, 6vw, 4.5rem);
+              color: white;
+              margin-bottom: 1.5rem;
+              line-height: 1.2;
+              text-shadow: 0 4px 8px rgba(0,0,0,0.25);
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .hero-subtitle {
+              font-size: clamp(1.1rem, 2vw, 1.5rem);
+              color: rgba(255, 255, 255, 0.9);
+              max-width: 800px;
+              margin-bottom: 2.5rem;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .hero-buttons {
+              display: flex;
+              gap: 1.5rem;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .primary-btn {
+              background-color: #2EC4B6;
+              color: white;
+              border: none;
+              padding: 1rem 2.5rem;
+              border-radius: 30px;
+              font-size: 1.1rem;
+              font-weight: 600;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              text-decoration: none;
+            }
+            
+            .primary-btn:hover {
+              background-color: #1aa397;
+              transform: translateY(-3px);
+              box-shadow: 0 10px 20px rgba(46, 196, 182, 0.25);
+            }
+            
+            .secondary-btn {
+              background-color: transparent;
+              color: white;
+              border: 2px solid white;
+              padding: 1rem 2.5rem;
+              border-radius: 30px;
+              font-size: 1.1rem;
+              font-weight: 600;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              text-decoration: none;
+            }
+            
+            .secondary-btn:hover {
+              background-color: rgba(255, 255, 255, 0.1);
+              transform: translateY(-3px);
+            }
+            
+            .scroll-indicator {
+              position: absolute;
+              bottom: 3rem;
+              left: 50%;
+              transform: translateX(-50%);
+              color: white;
+              opacity: 0.8;
+              animation: bounce 2s infinite;
+              cursor: pointer;
+            }
+            
+            @keyframes bounce {
+              0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+              40% { transform: translateX(-50%) translateY(-20px); }
+              60% { transform: translateX(-50%) translateY(-10px); }
+            }
+            
+            .product-preview {
+              position: absolute;
+              bottom: 0;
+              left: 50%;
+              transform: translateX(-50%);
+              max-height: 50%;
+              opacity: 0;
+            }
+            
+            .product-preview img {
+              max-height: 100%;
+              width: auto;
+            }
+          </style>
+          <div class="hero-container">
+            <div class="bg-gradient gradient-bg"></div>
+            <div class="floating-elements">
+              <div class="floating-element" style="width: 400px; height: 400px; top: 10%; left: 10%;"></div>
+              <div class="floating-element" style="width: 300px; height: 300px; bottom: 20%; right: 15%;"></div>
+            </div>
+            
+            <h1 class="hero-title">重新定义你眼中的世界</h1>
+            <p class="hero-subtitle">VisionPro AR眼镜，将数字信息无缝融入现实世界，开启沉浸式体验新纪元</p>
+            <div class="hero-buttons">
+              <a href="#showcase" class="primary-btn">探索产品</a>
+              <a href="#scenarios" class="secondary-btn">了解应用场景</a>
+            </div>
+            
+            <div class="scroll-indicator" id="scrollIndicator">
+              <i class="fa fa-chevron-down fa-2x"></i>
+            </div>
+            
+            <div class="product-preview">
+              <img src="https://picsum.photos/id/96/800/600" alt="VisionPro AR眼镜">
+            </div>
+          </div>
+        `;
+      }
+      
+      connectedCallback() {
+        // 文字动画
+        const title = this.shadowRoot.querySelector('.hero-title');
+        const subtitle = this.shadowRoot.querySelector('.hero-subtitle');
+        const buttons = this.shadowRoot.querySelector('.hero-buttons');
+        const productPreview = this.shadowRoot.querySelector('.product-preview');
+        
+        // 浮动元素动画
+        const floatingElements = this.shadowRoot.querySelectorAll('.floating-element');
+        floatingElements.forEach((el, index) => {
+          gsap.to(el, {
+            duration: 15 + index * 5,
+            x: () => Math.random() * 200 - 100,
+            y: () => Math.random() * 200 - 100,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut'
+          });
+        });
+        
+        // 序列动画
+        gsap.timeline()
+          .to(title, { duration: 0.8, opacity: 1, y: 0, ease: 'power2.out' }, 0.3)
+          .to(subtitle, { duration: 0.8, opacity: 1, y: 0, ease: 'power2.out' }, 0.6)
+          .to(buttons, { duration: 0.8, opacity: 1, y: 0, ease: 'power2.out' }, 0.9)
+          .to(productPreview, { duration: 1, opacity: 1, y: 0, ease: 'power2.out' }, 1.2);
+        
+        // 滚动指示器点击事件
+        const scrollIndicator = this.shadowRoot.getElementById('scrollIndicator');
+        scrollIndicator.addEventListener('click', () => {
+          document.getElementById('showcase').scrollIntoView({ behavior: 'smooth' });
+        });
+      }
+    }
+    customElements.define('hero-section', HeroSection);
+    
+    // 产品展示组件
+    class ProductShowcase extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host {
+              display: block;
+              padding: 12rem 2rem;
+              background-color: white;
+              position: relative;
+            }
+            
+            .section-title {
+              text-align: center;
+              margin-bottom: 10rem;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .section-title h2 {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 700;
+              font-size: clamp(2rem, 4vw, 3rem);
+              color: #0A2463;
+              margin-bottom: 1rem;
+            }
+            
+            .section-title p {
+              font-size: 1.2rem;
+              color: #666;
+              max-width: 700px;
+              margin: 0 auto;
+            }
+            
+            .showcase-container {
+              max-width: 1200px;
+              margin: 0 auto;
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 5rem;
+              align-items: center;
+            }
+            
+            .product-image {
+              position: relative;
+              perspective: 1000px;
+              opacity: 0;
+              transform: translateX(-50px);
+            }
+            
+            .product-image img {
+              width: 100%;
+              height: auto;
+              border-radius: 12px;
+              box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+              transition: transform 0.5s ease;
+            }
+            
+            .product-details {
+              opacity: 0;
+              transform: translateX(50px);
+            }
+            
+            .detail-item {
+              margin-bottom: 2.5rem;
+            }
+            
+            .detail-item h3 {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 600;
+              font-size: 1.5rem;
+              color: #0A2463;
+              margin-bottom: 0.75rem;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+            }
+            
+            .detail-item h3 i {
+              color: #2EC4B6;
+            }
+            
+            .detail-item p {
+              font-size: 1.1rem;
+              color: #555;
+              line-height: 1.6;
+            }
+            
+            .highlight {
+              background: linear-gradient(120deg, rgba(46, 196, 182, 0.2) 0%, rgba(46, 196, 182, 0.2) 100%);
+              background-repeat: no-repeat;
+              background-size: 100% 0.5em;
+              background-position: 0 88%;
+            }
+            
+            @media (max-width: 768px) {
+              .showcase-container {
+                grid-template-columns: 1fr;
+              }
+              
+              .product-image {
+                order: 1;
+              }
+              
+              .product-details {
+                order: 2;
+              }
+            }
+          </style>
+          <div class="section-title">
+            <h2>突破性设计，卓越体验</h2>
+            <p>每一处细节都经过精心打磨，融合前沿科技与人体工学设计，带来前所未有的AR体验</p>
+          </div>
+          
+          <div class="showcase-container">
+            <div class="product-image">
+              <img src="https://picsum.photos/id/119/800/800" alt="VisionPro AR眼镜细节展示">
+            </div>
+            
+            <div class="product-details">
+              <div class="detail-item">
+                <h3><i class="fa fa-microchip"></i> 超高清显示技术</h3>
+                <p>搭载新一代微型OLED显示屏，分辨率高达3840×2160，像素密度超过3000PPI，呈现栩栩如生的虚拟内容，<span class="highlight">与现实世界完美融合</span>。</p>
+              </div>
+              
+              <div class="detail-item">
+                <h3><i class="fa fa-battery-full"></i> 全天续航能力</h3>
+                <p>创新电池设计，单次充电可支持8小时连续使用，快充30分钟即可恢复70%电量，满足您从早到晚的使用需求。</p>
+              </div>
+              
+              <div class="detail-item">
+                <h3><i class="fa fa-eye"></i> 智能眼部追踪</h3>
+                <p>内置7个高精度传感器，实现毫秒级眼部追踪，视线所及之处，交互即刻响应，<span class="highlight">解放双手，仅用目光即可操控</span>。</p>
+              </div>
+              
+              <div class="detail-item">
+                <h3><i class="fa fa-wifi"></i> 全域互联能力</h3>
+                <p>支持Wi-Fi 6E与蓝牙5.2，无缝连接各类智能设备，打造全方位智能生态系统，让您的数字生活更加便捷。</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      
+      connectedCallback() {
+        const sectionTitle = this.shadowRoot.querySelector('.section-title');
+        const productImage = this.shadowRoot.querySelector('.product-image');
+        const productDetails = this.shadowRoot.querySelector('.product-details');
+        
+        // 滚动触发动画
+        gsap.to(sectionTitle, {
+          scrollTrigger: {
+            trigger: sectionTitle,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          y: 0,
+          ease: 'power2.out'
+        });
+        
+        gsap.to(productImage, {
+          scrollTrigger: {
+            trigger: productImage,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          x: 0,
+          ease: 'power2.out'
+        });
+        
+        gsap.to(productDetails, {
+          scrollTrigger: {
+            trigger: productDetails,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          x: 0,
+          ease: 'power2.out'
+        });
+        
+        // 产品图片悬停效果
+        const img = this.shadowRoot.querySelector('.product-image img');
+        img.addEventListener('mouseenter', () => {
+          gsap.to(img, { duration: 0.5, scale: 1.05, rotationY: 5, ease: 'power2.out' });
+        });
+        
+        img.addEventListener('mouseleave', () => {
+          gsap.to(img, { duration: 0.5, scale: 1, rotationY: 0, ease: 'power2.out' });
+        });
+      }
+    }
+    customElements.define('product-showcase', ProductShowcase);
+        // 特性介绍组件
+    class FeaturesSection extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host {
+              display: block;
+              padding: 12rem 2rem;
+              background-color: #f9fafc;
+              position: relative;
+            }
+            
+            .section-title {
+              text-align: center;
+              margin-bottom: 10rem;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .section-title h2 {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 700;
+              font-size: clamp(2rem, 4vw, 3rem);
+              color: #0A2463;
+              margin-bottom: 1rem;
+            }
+            
+            .section-title p {
+              font-size: 1.2rem;
+              color: #666;
+              max-width: 700px;
+              margin: 0 auto;
+            }
+            
+            .features-grid {
+              max-width: 1200px;
+              margin: 0 auto;
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+              gap: 3rem;
+            }
+            
+            .feature-card {
+              background-color: white;
+              border-radius: 12px;
+              padding: 2.5rem;
+              box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+              transition: all 0.3s ease;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .feature-card:hover {
+              transform: translateY(-10px);
+              box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            }
+            
+            .feature-icon {
+              width: 70px;
+              height: 70px;
+              background-color: rgba(46, 196, 182, 0.1);
+              border-radius: 15px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              margin-bottom: 1.5rem;
+              color: #2EC4B6;
+              font-size: 1.8rem;
+              transition: all 0.3s ease;
+            }
+            
+            .feature-card:hover .feature-icon {
+              background-color: #2EC4B6;
+              color: white;
+            }
+            
+            .feature-title {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 600;
+              font-size: 1.5rem;
+              color: #0A2463;
+              margin-bottom: 1rem;
+            }
+            
+            .feature-description {
+              color: #666;
+              line-height: 1.6;
+            }
+          </style>
+          <div class="section-title">
+            <h2>重新定义AR体验的核心特性</h2>
+            <p>VisionPro 融合多项创新技术，带来前所未有的增强现实体验，让数字世界与物理世界无缝融合</p>
+          </div>
+          
+          <div class="features-grid">
+            <div class="feature-card" data-index="0">
+              <div class="feature-icon">
+                <i class="fa fa-eye"></i>
+              </div>
+              <h3 class="feature-title">空间感知技术</h3>
+              <p class="feature-description">搭载先进的SLAM技术，实时构建周围环境3D模型，精确感知空间维度，让虚拟物体自然地融入现实环境，实现真实的遮挡和光影效果。</p>
+            </div>
+            
+            <div class="feature-card" data-index="1">
+              <div class="feature-icon">
+                <i class="fa fa-hand-pointer-o"></i>
+              </div>
+              <h3 class="feature-title">手势交互系统</h3>
+              <p class="feature-description">无需控制器，通过高精度手势识别，在空中即可完成点击、拖拽、缩放等操作，交互自然流畅，如同直接触摸虚拟物体一般。</p>
+            </div>
+            
+            <div class="feature-card" data-index="2">
+              <div class="feature-icon">
+                <i class="fa fa-comments"></i>
+              </div>
+              <h3 class="feature-title">智能语音助手</h3>
+              <p class="feature-description">内置AI语音助手，支持多语言实时翻译和指令识别，通过自然语言即可操控设备，解放双手，提升操作效率。</p>
+            </div>
+            
+            <div class="feature-card" data-index="3">
+              <div class="feature-icon">
+                <i class="fa fa-shield"></i>
+              </div>
+              <h3 class="feature-title">全天候护眼模式</h3>
+              <p class="feature-description">采用专利护眼技术，自动调节屏幕亮度和色温，减少蓝光辐射，即使长时间使用也不会感到视觉疲劳，保护您的眼睛健康。</p>
+            </div>
+            
+            <div class="feature-card" data-index="4">
+              <div class="feature-icon">
+                <i class="fa fa-globe"></i>
+              </div>
+              <h3 class="feature-title">全球定位增强</h3>
+              <p class="feature-description">结合GPS、北斗和视觉定位，在室内外均可实现厘米级定位精度，为导航、AR游戏和位置服务提供精准支持。</p>
+            </div>
+            
+            <div class="feature-card" data-index="5">
+              <div class="feature-icon">
+                <i class="fa fa-cloud"></i>
+              </div>
+              <h3 class="feature-title">云端协同计算</h3>
+              <p class="feature-description">本地与云端协同处理，复杂计算任务交由云端完成，确保设备轻量化的同时，提供强大的AI处理能力和海量存储空间。</p>
+            </div>
+          </div>
+        `;
+      }
+      
+      connectedCallback() {
+        const sectionTitle = this.shadowRoot.querySelector('.section-title');
+        const featureCards = this.shadowRoot.querySelectorAll('.feature-card');
+        
+        // 标题动画
+        gsap.to(sectionTitle, {
+          scrollTrigger: {
+            trigger: sectionTitle,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          y: 0,
+          ease: 'power2.out'
+        });
+        
+        // 特性卡片动画
+        featureCards.forEach((card, index) => {
+          gsap.to(card, {
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 85%',
+              end: 'top 60%',
+              toggleActions: 'play none none reverse'
+            },
+            duration: 0.6,
+            opacity: 1,
+            y: 0,
+            delay: index * 0.15,
+            ease: 'power2.out'
+          });
+        });
+      }
+    }
+    customElements.define('features-section', FeaturesSection);
+    
+    // 3D旋转展示组件
+    class RotationDemo extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host {
+              display: block;
+              padding: 12rem 2rem;
+              background-color: #0A2463;
+              position: relative;
+              overflow: hidden;
+            }
+            
+            .section-content {
+              max-width: 1200px;
+              margin: 0 auto;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              text-align: center;
+            }
+            
+            .section-title {
+              margin-bottom: 6rem;
+              max-width: 700px;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .section-title h2 {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 700;
+              font-size: clamp(2rem, 4vw, 3rem);
+              color: white;
+              margin-bottom: 1rem;
+            }
+            
+            .section-title p {
+              font-size: 1.2rem;
+              color: rgba(255, 255, 255, 0.8);
+            }
+            
+            .rotation-container {
+              position: relative;
+              width: 100%;
+              max-width: 600px;
+              height: 600px;
+              perspective: 1000px;
+              opacity: 0;
+            }
+            
+            .rotating-model {
+              position: absolute;
+              width: 100%;
+              height: 100%;
+              transform-style: preserve-3d;
+              cursor: grab;
+            }
+            
+            .rotating-model:active {
+              cursor: grabbing;
+            }
+            
+            .model-face {
+              position: absolute;
+              width: 100%;
+              height: 100%;
+              backface-visibility: hidden;
+              border-radius: 12px;
+              overflow: hidden;
+              box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            }
+            
+            .model-face img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+            
+            .interaction-hint {
+              margin-top: 3rem;
+              color: rgba(255, 255, 255, 0.7);
+              font-size: 1.1rem;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              opacity: 0;
+            }
+            
+            .interaction-hint i {
+              color: #2EC4B6;
+              animation: pulse 2s infinite;
+            }
+            
+            @keyframes pulse {
+              0% { transform: scale(1); }
+              50% { transform: scale(1.2); }
+              100% { transform: scale(1); }
+            }
+            
+            .bg-elements {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              z-index: 0;
+            }
+            
+            .bg-element {
+              position: absolute;
+              background-color: rgba(46, 196, 182, 0.1);
+              border-radius: 50%;
+              filter: blur(80px);
+            }
+          </style>
+          <div class="bg-elements">
+            <div class="bg-element" style="width: 600px; height: 600px; top: -200px; right: -100px;"></div>
+            <div class="bg-element" style="width: 500px; height: 500px; bottom: -150px; left: -100px;"></div>
+          </div>
+          
+          <div class="section-content">
+            <div class="section-title">
+              <h2>360°全方位体验</h2>
+              <p>探索VisionPro的每一个细节，感受其精湛工艺与创新设计的完美融合</p>
+            </div>
+            
+            <div class="rotation-container">
+              <div class="rotating-model" id="rotatingModel">
+                <div class="model-face" style="transform: rotateY(0deg) translateZ(300px);">
+                  <img src="https://picsum.photos/id/160/600/600" alt="正面视图">
+                </div>
+                <div class="model-face" style="transform: rotateY(60deg) translateZ(300px);">
+                  <img src="https://picsum.photos/id/161/600/600" alt="右侧视图1">
+                </div>
+                <div class="model-face" style="transform: rotateY(120deg) translateZ(300px);">
+                  <img src="https://picsum.photos/id/162/600/600" alt="右侧视图2">
+                </div>
+                <div class="model-face" style="transform: rotateY(180deg) translateZ(300px);">
+                  <img src="https://picsum.photos/id/163/600/600" alt="背面视图">
+                </div>
+                <div class="model-face" style="transform: rotateY(240deg) translateZ(300px);">
+                  <img src="https://picsum.photos/id/164/600/600" alt="左侧视图1">
+                </div>
+                <div class="model-face" style="transform: rotateY(300deg) translateZ(300px);">
+                  <img src="https://picsum.photos/id/165/600/600" alt="左侧视图2">
+                </div>
+              </div>
+            </div>
+            
+            <div class="interaction-hint">
+              <i class="fa fa-hand-pointer-o"></i>
+              <span>拖动模型可360°旋转查看</span>
+            </div>
+          </div>
+        `;
+      }
+      
+      connectedCallback() {
+        const sectionTitle = this.shadowRoot.querySelector('.section-title');
+        const rotationContainer = this.shadowRoot.querySelector('.rotation-container');
+        const interactionHint = this.shadowRoot.querySelector('.interaction-hint');
+        const rotatingModel = this.shadowRoot.getElementById('rotatingModel');
+        
+        // 初始化3D旋转
+        let currentRotation = 0;
+        
+        // 自动旋转
+        const autoRotate = () => {
+          currentRotation += 0.5;
+          rotatingModel.style.transform = `rotateY(${currentRotation}deg)`;
+          requestAnimationFrame(autoRotate);
+        };
+        autoRotate();
+        
+        // 拖拽交互
+        Draggable.create(rotatingModel, {
+          type: "rotation",
+          inertia: true,
+          onDragStart: () => {
+            // 停止自动旋转
+            currentRotation = gsap.getProperty(rotatingModel, "rotationY");
+          },
+          onDrag: function() {
+            currentRotation = this.rotationY;
+          }
+        });
+        
+        // 动画
+        gsap.to(sectionTitle, {
+          scrollTrigger: {
+            trigger: sectionTitle,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          y: 0,
+          ease: 'power2.out'
+        });
+        
+        gsap.to(rotationContainer, {
+          scrollTrigger: {
+            trigger: rotationContainer,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          ease: 'power2.out'
+        });
+        
+        gsap.to(interactionHint, {
+          scrollTrigger: {
+            trigger: interactionHint,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          delay: 0.3,
+          ease: 'power2.out'
+        });
+      }
+    }
+    customElements.define('rotation-demo', RotationDemo);
+    
+    // 交互体验组件
+    class InteractionDemo extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host {
+              display: block;
+              padding: 12rem 2rem;
+              background-color: white;
+              position: relative;
+            }
+            
+            .section-title {
+              text-align: center;
+              margin-bottom: 10rem;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .section-title h2 {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 700;
+              font-size: clamp(2rem, 4vw, 3rem);
+              color: #0A2463;
+              margin-bottom: 1rem;
+            }
+            
+            .section-title p {
+              font-size: 1.2rem;
+              color: #666;
+              max-width: 700px;
+              margin: 0 auto;
+            }
+            
+            .demo-container {
+              max-width: 1200px;
+              margin: 0 auto;
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 5rem;
+              align-items: center;
+            }
+            
+            .demo-video {
+              position: relative;
+              border-radius: 12px;
+              overflow: hidden;
+              box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+              opacity: 0;
+              transform: translateX(-50px);
+            }
+            
+            .demo-video img {
+              width: 100%;
+              height: auto;
+              display: block;
+            }
+            
+            .play-button {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              width: 80px;
+              height: 80px;
+              background-color: rgba(46, 196, 182, 0.9);
+              border-radius: 50%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              color: white;
+              font-size: 1.5rem;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              box-shadow: 0 4px 12px rgba(46, 196, 182, 0.3);
+            }
+            
+            .play-button:hover {
+              transform: translate(-50%, -50%) scale(1.1);
+              background-color: #2EC4B6;
+            }
+            
+            .interaction-features {
+              opacity: 0;
+              transform: translateX(50px);
+            }
+            
+            .feature-item {
+              margin-bottom: 2.5rem;
+              display: flex;
+              gap: 1.5rem;
+            }
+            
+            .feature-icon {
+              min-width: 50px;
+              height: 50px;
+              background-color: rgba(46, 196, 182, 0.1);
+              border-radius: 10px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              color: #2EC4B6;
+              font-size: 1.2rem;
+              flex-shrink: 0;
+            }
+            
+            .feature-content h3 {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 600;
+              font-size: 1.3rem;
+              color: #0A2463;
+              margin-bottom: 0.5rem;
+            }
+            
+            .feature-content p {
+              color: #666;
+              line-height: 1.6;
+            }
+            
+            @media (max-width: 768px) {
+              .demo-container {
+                grid-template-columns: 1fr;
+              }
+              
+              .demo-video {
+                order: 1;
+              }
+              
+              .interaction-features {
+                order: 2;
+              }
+            }
+          </style>
+          <div class="section-title">
+            <h2>沉浸式交互体验</h2>
+            <p>直观自然的操作方式，让您轻松与虚拟世界互动，体验未来科技的魅力</p>
+          </div>
+          
+          <div class="demo-container">
+            <div class="demo-video">
+              <img src="https://picsum.photos/id/111/800/600" alt="交互演示">
+              <div class="play-button">
+                <i class="fa fa-play"></i>
+              </div>
+            </div>
+            
+            <div class="interaction-features">
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <i class="fa fa-eye"></i>
+                </div>
+                <div class="feature-content">
+                  <h3>视线追踪控制</h3>
+                  <p>目光所及，即可选中目标，配合简单手势完成复杂操作，让交互更加直观自然。</p>
+                </div>
+              </div>
+              
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <i class="fa fa-hand-paper-o"></i>
+                </div>
+                <div class="feature-content">
+                  <h3>空中手势识别</h3>
+                  <p>无需触摸任何设备，在空中做出简单手势即可完成点击、拖拽、缩放等操作，精准识别度高达99.5%。</p>
+                </div>
+              </div>
+              
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <i class="fa fa-microphone"></i>
+                </div>
+                <div class="feature-content">
+                  <h3>语音指令操控</h3>
+                  <p>智能语音助手支持连续对话和复杂指令，嘈杂环境下也能精准识别，让操作更加便捷高效。</p>
+                </div>
+              </div>
+              
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <i class="fa fa-braille"></i>
+                </div>
+                <div class="feature-content">
+                  <h3>触觉反馈系统</h3>
+                  <p>内置微型振动马达，提供精准触觉反馈，让虚拟交互拥有真实触感，增强沉浸感。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      
+      connectedCallback() {
+        const sectionTitle = this.shadowRoot.querySelector('.section-title');
+        const demoVideo = this.shadowRoot.querySelector('.demo-video');
+        const interactionFeatures = this.shadowRoot.querySelector('.interaction-features');
+        
+        // 动画
+        gsap.to(sectionTitle, {
+          scrollTrigger: {
+            trigger: sectionTitle,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          y: 0,
+          ease: 'power2.out'
+        });
+        
+        gsap.to(demoVideo, {
+          scrollTrigger: {
+            trigger: demoVideo,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          x: 0,
+          ease: 'power2.out'
+        });
+        
+        gsap.to(interactionFeatures, {
+          scrollTrigger: {
+            trigger: interactionFeatures,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          x: 0,
+          ease: 'power2.out'
+        });
+        
+        // 播放按钮效果
+        const playButton = this.shadowRoot.querySelector('.play-button');
+        playButton.addEventListener('mouseenter', () => {
+          gsap.to(playButton, { duration: 0.3, scale: 1.1, ease: 'power2.out' });
+        });
+        
+        playButton.addEventListener('mouseleave', () => {
+          gsap.to(playButton, { duration: 0.3, scale: 1, ease: 'power2.out' });
+        });
+        
+        playButton.addEventListener('click', () => {
+          alert('视频播放功能将在这里实现');
+        });
+      }
+    }
+    customElements.define('interaction-demo', InteractionDemo);
+    
+    // 场景展示组件
+    class ScenariosSection extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host {
+              display: block;
+              padding: 12rem 2rem;
+              background-color: #f9fafc;
+              position: relative;
+            }
+            
+            .section-title {
+              text-align: center;
+              margin-bottom: 10rem;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .section-title h2 {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 700;
+              font-size: clamp(2rem, 4vw, 3rem);
+              color: #0A2463;
+              margin-bottom: 1rem;
+            }
+            
+            .section-title p {
+              font-size: 1.2rem;
+              color: #666;
+              max-width: 700px;
+              margin: 0 auto;
+            }
+            
+            .scenarios-grid {
+              max-width: 1200px;
+              margin: 0 auto;
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+              gap: 4rem;
+            }
+            
+            .scenario-card {
+              border-radius: 12px;
+              overflow: hidden;
+              box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+              transition: all 0.3s ease;
+              opacity: 0;
+              transform: translateY(30px);
+              position: relative;
+            }
+            
+            .scenario-card:hover {
+              transform: translateY(-10px);
+              box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            }
+            
+            .scenario-image {
+              height: 250px;
+              overflow: hidden;
+            }
+            
+            .scenario-image img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              transition: transform 0.5s ease;
+            }
+            
+            .scenario-card:hover .scenario-image img {
+              transform: scale(1.05);
+            }
+            
+            .scenario-content {
+              padding: 2rem;
+              background-color: white;
+            }
+            
+            .scenario-category {
+              display: inline-block;
+              padding: 0.5rem 1rem;
+              background-color: rgba(46, 196, 182, 0.1);
+              color: #2EC4B6;
+              border-radius: 30px;
+              font-size: 0.9rem;
+              font-weight: 600;
+              margin-bottom: 1rem;
+            }
+            
+            .scenario-title {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 600;
+              font-size: 1.5rem;
+              color: #0A2463;
+              margin-bottom: 1rem;
+            }
+            
+            .scenario-description {
+              color: #666;
+              line-height: 1.6;
+              margin-bottom: 1.5rem;
+            }
+            
+            .scenario-link {
+              display: inline-flex;
+              align-items: center;
+              gap: 8px;
+              color: #2EC4B6;
+              font-weight: 600;
+              text-decoration: none;
+              transition: all 0.3s ease;
+            }
+            
+            .scenario-link:hover {
+              color: #1aa397;
+              gap: 12px;
+            }
+          </style>
+          <div class="section-title">
+            <h2>多元化应用场景</h2>
+            <p>VisionPro 不仅仅是一款设备，更是您工作、学习、娱乐的全能助手，满足多场景需求</p>
+          </div>
+          
+          <div class="scenarios-grid">
+            <div class="scenario-card" data-index="0">
+              <div class="scenario-image">
+                <img src="https://picsum.photos/id/180/600/400" alt="工作场景">
+              </div>
+              <div class="scenario-content">
+                <span class="scenario-category">工作效率</span>
+                <h3 class="scenario-title">虚拟办公空间</h3>
+                <p class="scenario-description">创建无限扩展的虚拟显示屏，支持多任务处理，远程会议时可实时共享3D模型和数据可视化内容，提升团队协作效率。</p>
+                <a href="#" class="scenario-link">
+                  了解更多 <i class="fa fa-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+            
+            <div class="scenario-card" data-index="1">
+              <div class="scenario-image">
+                <img src="https://picsum.photos/id/20/600/400" alt="教育场景">
+              </div>
+              <div class="scenario-content">
+                <span class="scenario-category">教育学习</span>
+                <h3 class="scenario-title">沉浸式学习体验</h3>
+                <p class="scenario-description">通过3D模型直观理解复杂概念，进行虚拟实验和历史场景重现，让学习不再局限于书本，激发探索兴趣和创造力。</p>
+                <a href="#" class="scenario-link">
+                  了解更多 <i class="fa fa-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+            
+            <div class="scenario-card" data-index="2">
+              <div class="scenario-image">
+                <img src="https://picsum.photos/id/96/600/400" alt="医疗场景">
+              </div>
+              <div class="scenario-content">
+                <span class="scenario-category">医疗健康</span>
+                <h3 class="scenario-title">精准医疗辅助</h3>
+                <p class="scenario-description">为医生提供实时患者数据和3D解剖模型，辅助手术规划和执行，远程医疗会诊时可共享高清影像和实时标注。</p>
+                <a href="#" class="scenario-link">
+                  了解更多 <i class="fa fa-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+            
+            <div class="scenario-card" data-index="3">
+              <div class="scenario-image">
+                <img src="https://picsum.photos/id/119/600/400" alt="工业场景">
+              </div>
+              <div class="scenario-content">
+                <span class="scenario-category">工业制造</span>
+                <h3 class="scenario-title">智能工厂解决方案</h3>
+                <p class="scenario-description">实时显示设备参数和维护指南，通过AR标记快速定位故障点，远程专家可通过第一视角提供指导，减少停机时间。</p>
+                <a href="#" class="scenario-link">
+                  了解更多 <i class="fa fa-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+            
+            <div class="scenario-card" data-index="4">
+              <div class="scenario-image">
+                <img src="https://picsum.photos/id/160/600/400" alt="零售场景">
+              </div>
+              <div class="scenario-content">
+                <span class="scenario-category">零售购物</span>
+                <h3 class="scenario-title">虚拟试穿与体验</h3>
+                <p class="scenario-description">试穿虚拟服装、试用虚拟家具，查看产品详情和用户评价，AR导航快速找到所需商品，重新定义购物体验。</p>
+                <a href="#" class="scenario-link">
+                  了解更多 <i class="fa fa-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+            
+            <div class="scenario-card" data-index="5">
+              <div class="scenario-image">
+                <img src="https://picsum.photos/id/111/600/400" alt="娱乐场景">
+              </div>
+              <div class="scenario-content">
+                <span class="scenario-category">娱乐游戏</span>
+                <h3 class="scenario-title">沉浸式游戏体验</h3>
+                <p class="scenario-description">将游戏世界融入现实环境，通过身体动作和手势进行交互，与朋友在虚拟空间中共同游戏，感受前所未有的沉浸感。</p>
+                <a href="#" class="scenario-link">
+                  了解更多 <i class="fa fa-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      
+      connectedCallback() {
+        const sectionTitle = this.shadowRoot.querySelector('.section-title');
+        const scenarioCards = this.shadowRoot.querySelectorAll('.scenario-card');
+        
+        // 标题动画
+        gsap.to(sectionTitle, {
+          scrollTrigger: {
+            trigger: sectionTitle,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          y: 0,
+          ease: 'power2.out'
+        });
+        
+        // 场景卡片动画
+        scenarioCards.forEach((card, index) => {
+          gsap.to(card, {
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 85%',
+              end: 'top 60%',
+              toggleActions: 'play none none reverse'
+            },
+            duration: 0.6,
+            opacity: 1,
+            y: 0,
+            delay: index * 0.1,
+            ease: 'power2.out'
+          });
+        });
+      }
+    }
+    customElements.define('scenarios-section', ScenariosSection);
+        // 数据统计组件
+    class StatsSection extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host {
+              display: block;
+              padding: 12rem 2rem;
+              background-color: #0A2463;
+              position: relative;
+              overflow: hidden;
+            }
+            
+            .bg-elements {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              z-index: 0;
+            }
+            
+            .bg-element {
+              position: absolute;
+              background-color: rgba(46, 196, 182, 0.1);
+              border-radius: 50%;
+              filter: blur(80px);
+            }
+            
+            .stats-container {
+              max-width: 1200px;
+              margin: 0 auto;
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+              gap: 4rem;
+              position: relative;
+              z-index: 1;
+            }
+            
+            .stat-item {
+              text-align: center;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .stat-number {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 700;
+              font-size: clamp(2.5rem, 5vw, 4rem);
+              color: #2EC4B6;
+              margin-bottom: 1rem;
+            }
+            
+            .stat-label {
+              font-size: 1.2rem;
+              color: white;
+              font-weight: 500;
+            }
+            
+            .chart-container {
+              max-width: 800px;
+              margin: 8rem auto 0;
+              background-color: rgba(255, 255, 255, 0.05);
+              border-radius: 12px;
+              padding: 2rem;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .chart-title {
+              color: white;
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 600;
+              font-size: 1.5rem;
+              margin-bottom: 1.5rem;
+              text-align: center;
+            }
+            
+            #usageChart {
+              width: 100%;
+              height: 300px;
+            }
+          </style>
+          <div class="bg-elements">
+            <div class="bg-element" style="width: 500px; height: 500px; top: -100px; left: -100px;"></div>
+            <div class="bg-element" style="width: 600px; height: 600px; bottom: -200px; right: -100px;"></div>
+          </div>
+          
+          <div class="stats-container">
+            <div class="stat-item" data-target="98" data-suffix="%">
+              <div class="stat-number">0</div>
+              <div class="stat-label">用户满意度</div>
+            </div>
+            
+            <div class="stat-item" data-target="200" data-suffix="+">
+              <div class="stat-number">0</div>
+              <div class="stat-label">合作伙伴</div>
+            </div>
+            
+            <div class="stat-item" data-target="50" data-suffix="+">
+              <div class="stat-number">0</div>
+              <div class="stat-label">行业解决方案</div>
+            </div>
+            
+            <div class="stat-item" data-target="100000" data-suffix="+">
+              <div class="stat-number">0</div>
+              <div class="stat-label">预订用户</div>
+            </div>
+          </div>
+          
+          <div class="chart-container">
+            <h3 class="chart-title">各行业使用时长分布</h3>
+            <canvas id="usageChart"></canvas>
+          </div>
+        `;
+      }
+      
+      connectedCallback() {
+        const statItems = this.shadowRoot.querySelectorAll('.stat-item');
+        const chartContainer = this.shadowRoot.querySelector('.chart-container');
+        const usageChart = this.shadowRoot.getElementById('usageChart');
+        
+        // 数字计数动画
+        statItems.forEach((item, index) => {
+          const numberEl = item.querySelector('.stat-number');
+          const target = parseInt(item.getAttribute('data-target'));
+          const suffix = item.getAttribute('data-suffix') || '';
+          
+          gsap.to(item, {
+            scrollTrigger: {
+              trigger: item,
+              start: 'top 80%',
+              end: 'top 50%',
+              toggleActions: 'play none none reverse'
+            },
+            duration: 0.8,
+            opacity: 1,
+            y: 0,
+            delay: index * 0.2,
+            ease: 'power2.out'
+          });
+          
+          // 数字增长动画
+          ScrollTrigger.create({
+            trigger: item,
+            start: 'top 70%',
+            once: true,
+            onEnter: () => {
+              gsap.to(numberEl, {
+                duration: 2,
+                textContent: target,
+                snap: { textContent: 1 },
+                ease: 'power2.out',
+                onUpdate: () => {
+                  numberEl.textContent = Math.floor(gsap.getProperty(numberEl, 'textContent')) + suffix;
+                }
+              });
+            }
+          });
+        });
+        
+        // 图表动画
+        gsap.to(chartContainer, {
+          scrollTrigger: {
+            trigger: chartContainer,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          y: 0,
+          ease: 'power2.out',
+          onComplete: () => {
+            // 初始化图表
+            new Chart(usageChart, {
+              type: 'bar',
+              data: {
+                labels: ['医疗健康', '教育培训', '工业制造', '零售电商', '游戏娱乐', '企业办公'],
+                datasets: [{
+                  label: '平均每日使用时长(小时)',
+                  data: [4.2, 3.8, 5.5, 2.1, 3.5, 6.2],
+                  backgroundColor: [
+                    'rgba(46, 196, 182, 0.8)',
+                    'rgba(46, 196, 182, 0.7)',
+                    'rgba(46, 196, 182, 0.6)',
+                    'rgba(46, 196, 182, 0.5)',
+                    'rgba(46, 196, 182, 0.4)',
+                    'rgba(46, 196, 182, 0.3)'
+                  ],
+                  borderColor: [
+                    'rgba(46, 196, 182, 1)'
+                  ],
+                  borderWidth: 1
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    grid: {
+                      color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                      color: 'rgba(255, 255, 255, 0.7)'
+                    }
+                  },
+                  x: {
+                    grid: {
+                      color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                      color: 'rgba(255, 255, 255, 0.7)'
+                    }
+                  }
+                },
+                plugins: {
+                  legend: {
+                    labels: {
+                      color: 'rgba(255, 255, 255, 0.7)'
+                    }
+                  }
+                },
+                animation: {
+                  duration: 2000,
+                  easing: 'easeOutQuart'
+                }
+              }
+            });
+          }
+        });
+      }
+    }
+    customElements.define('stats-section', StatsSection);
+    
+    // 价格方案组件
+    class PricingSection extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host {
+              display: block;
+              padding: 12rem 2rem;
+              background-color: white;
+              position: relative;
+            }
+            
+            .section-title {
+              text-align: center;
+              margin-bottom: 10rem;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .section-title h2 {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 700;
+              font-size: clamp(2rem, 4vw, 3rem);
+              color: #0A2463;
+              margin-bottom: 1rem;
+            }
+            
+            .section-title p {
+              font-size: 1.2rem;
+              color: #666;
+              max-width: 700px;
+              margin: 0 auto;
+            }
+            
+            .pricing-grid {
+              max-width: 1200px;
+              margin: 0 auto;
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+              gap: 3rem;
+            }
+            
+            .pricing-card {
+              background-color: #f9fafc;
+              border-radius: 12px;
+              padding: 3rem;
+              text-align: center;
+              transition: all 0.3s ease;
+              position: relative;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .pricing-card:hover {
+              transform: translateY(-10px);
+              box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            }
+            
+            .pricing-card.popular {
+              background-color: #0A2463;
+              color: white;
+              transform: scale(1.05);
+              box-shadow: 0 20px 40px rgba(10, 36, 99, 0.15);
+            }
+            
+            .pricing-card.popular:hover {
+              transform: scale(1.05) translateY(-10px);
+            }
+            
+            .popular-badge {
+              position: absolute;
+              top: -15px;
+              left: 50%;
+              transform: translateX(-50%);
+              background-color: #2EC4B6;
+              color: white;
+              padding: 0.5rem 2rem;
+              border-radius: 30px;
+              font-weight: 600;
+              font-size: 0.9rem;
+            }
+            
+            .pricing-plan {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 600;
+              font-size: 1.5rem;
+              margin-bottom: 1rem;
+            }
+            
+            .pricing-card.popular .pricing-plan {
+              color: white;
+            }
+            
+            .pricing-price {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 700;
+              font-size: 2.5rem;
+              margin-bottom: 2rem;
+              color: #0A2463;
+            }
+            
+            .pricing-card.popular .pricing-price {
+              color: white;
+            }
+            
+            .pricing-price span {
+              font-size: 1rem;
+              font-weight: 500;
+              color: #666;
+            }
+            
+            .pricing-card.popular .pricing-price span {
+              color: rgba(255, 255, 255, 0.7);
+            }
+            
+            .pricing-features {
+              list-style: none;
+              padding: 0;
+              margin: 0 0 3rem 0;
+              text-align: left;
+            }
+            
+            .pricing-features li {
+              margin-bottom: 1rem;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              color: #666;
+            }
+            
+            .pricing-card.popular .pricing-features li {
+              color: rgba(255, 255, 255, 0.8);
+            }
+            
+            .pricing-features li i {
+              color: #2EC4B6;
+            }
+            
+            .pricing-button {
+              display: block;
+              width: 100%;
+              padding: 1rem;
+              border-radius: 8px;
+              font-weight: 600;
+              text-decoration: none;
+              transition: all 0.3s ease;
+              border: 2px solid #0A2463;
+              color: #0A2463;
+              background-color: transparent;
+            }
+            
+            .pricing-button:hover {
+              background-color: #0A2463;
+              color: white;
+            }
+            
+            .pricing-card.popular .pricing-button {
+              background-color: #2EC4B6;
+              color: white;
+              border-color: #2EC4B6;
+            }
+            
+            .pricing-card.popular .pricing-button:hover {
+              background-color: #1aa397;
+              border-color: #1aa397;
+            }
+          </style>
+          <div class="section-title">
+            <h2>选择适合您的方案</h2>
+            <p>无论您是个人用户、专业人士还是企业团队，都能找到最适合的VisionPro解决方案</p>
+          </div>
+          
+          <div class="pricing-grid">
+            <div class="pricing-card" data-index="0">
+              <h3 class="pricing-plan">基础版</h3>
+              <div class="pricing-price">¥3,999 <span>/ 台</span></div>
+              <ul class="pricing-features">
+                <li><i class="fa fa-check"></i> 超高清显示技术</li>
+                <li><i class="fa fa-check"></i> 基础手势识别</li>
+                <li><i class="fa fa-check"></i> 5小时续航能力</li>
+                <li><i class="fa fa-check"></i> 标准保修服务（1年）</li>
+                <li><i class="fa fa-check"></i> 基础应用商店访问权限</li>
+                <li><i class="fa fa-times"></i> 高级空间映射</li>
+                <li><i class="fa fa-times"></i> 企业级安全功能</li>
+              </ul>
+              <a href="#subscribe" class="pricing-button">选择此方案</a>
+            </div>
+            
+            <div class="pricing-card popular" data-index="1">
+              <div class="popular-badge">最受欢迎</div>
+              <h3 class="pricing-plan">专业版</h3>
+              <div class="pricing-price">¥6,999 <span>/ 台</span></div>
+              <ul class="pricing-features">
+                <li><i class="fa fa-check"></i> 超高清显示技术</li>
+                <li><i class="fa fa-check"></i> 高级手势与眼动追踪</li>
+                <li><i class="fa fa-check"></i> 8小时续航能力</li>
+                <li><i class="fa fa-check"></i> 延长保修服务（2年）</li>
+                <li><i class="fa fa-check"></i> 全量应用商店访问权限</li>
+                <li><i class="fa fa-check"></i> 高级空间映射</li>
+                <li><i class="fa fa-times"></i> 企业级安全功能</li>
+              </ul>
+              <a href="#subscribe" class="pricing-button">选择此方案</a>
+            </div>
+            
+            <div class="pricing-card" data-index="2">
+              <h3 class="pricing-plan">企业版</h3>
+              <div class="pricing-price">¥12,999 <span>/ 台</span></div>
+              <ul class="pricing-features">
+                <li><i class="fa fa-check"></i> 超高清显示技术</li>
+                <li><i class="fa fa-check"></i> 全套交互系统</li>
+                <li><i class="fa fa-check"></i> 10小时续航能力</li>
+                <li><i class="fa fa-check"></i> 企业级保修服务（3年）</li>
+                <li><i class="fa fa-check"></i> 专属企业应用商店</li>
+                <li><i class="fa fa-check"></i> 高级空间映射</li>
+                <li><i class="fa fa-check"></i> 企业级安全功能</li>
+              </ul>
+              <a href="#subscribe" class="pricing-button">选择此方案</a>
+            </div>
+          </div>
+        `;
+      }
+      
+      connectedCallback() {
+        const sectionTitle = this.shadowRoot.querySelector('.section-title');
+        const pricingCards = this.shadowRoot.querySelectorAll('.pricing-card');
+        
+        // 标题动画
+        gsap.to(sectionTitle, {
+          scrollTrigger: {
+            trigger: sectionTitle,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          y: 0,
+          ease: 'power2.out'
+        });
+        
+        // 价格卡片动画
+        pricingCards.forEach((card, index) => {
+          gsap.to(card, {
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 85%',
+              end: 'top 60%',
+              toggleActions: 'play none none reverse'
+            },
+            duration: 0.6,
+            opacity: 1,
+            y: 0,
+            delay: index * 0.2,
+            ease: 'power2.out'
+          });
+        });
+      }
+    }
+    customElements.define('pricing-section', PricingSection);
+    
+    // 用户评价组件
+    class ReviewsSection extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host {
+              display: block;
+              padding: 12rem 2rem;
+              background-color: #f9fafc;
+              position: relative;
+            }
+            
+            .section-title {
+              text-align: center;
+              margin-bottom: 8rem;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .section-title h2 {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 700;
+              font-size: clamp(2rem, 4vw, 3rem);
+              color: #0A2463;
+              margin-bottom: 1rem;
+            }
+            
+            .section-title p {
+              font-size: 1.2rem;
+              color: #666;
+              max-width: 700px;
+              margin: 0 auto;
+            }
+            
+            .reviews-container {
+              max-width: 1200px;
+              margin: 0 auto;
+              position: relative;
+            }
+            
+            .reviews-slider {
+              display: flex;
+              gap: 2rem;
+              overflow-x: auto;
+              scroll-snap-type: x mandatory;
+              padding-bottom: 2rem;
+              scrollbar-width: none;
+              opacity: 0;
+            }
+            
+            .reviews-slider::-webkit-scrollbar {
+              display: none;
+            }
+            
+            .review-card {
+              min-width: calc(100% - 2rem);
+              scroll-snap-align: start;
+              background-color: white;
+              border-radius: 12px;
+              padding: 2.5rem;
+              box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+              transition: all 0.3s ease;
+            }
+            
+            @media (min-width: 768px) {
+              .review-card {
+                min-width: calc(50% - 1rem);
+              }
+            }
+            
+            @media (min-width: 1024px) {
+              .review-card {
+                min-width: calc(33.333% - 1.333rem);
+              }
+            }
+            
+            .review-card:hover {
+              transform: translateY(-5px);
+              box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            }
+            
+            .review-rating {
+              color: #FFD700;
+              margin-bottom: 1.5rem;
+              font-size: 1.2rem;
+            }
+            
+            .review-text {
+              font-size: 1.1rem;
+              color: #555;
+              line-height: 1.6;
+              margin-bottom: 2rem;
+              font-style: italic;
+            }
+            
+            .review-author {
+              display: flex;
+              align-items: center;
+              gap: 1rem;
+            }
+            
+            .author-avatar {
+              width: 50px;
+              height: 50px;
+              border-radius: 50%;
+              overflow: hidden;
+            }
+            
+            .author-avatar img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+            
+            .author-info h4 {
+              font-weight: 600;
+              color: #0A2463;
+              margin-bottom: 0.25rem;
+            }
+            
+            .author-info p {
+              color: #666;
+              font-size: 0.9rem;
+            }
+            
+            .slider-nav {
+              position: absolute;
+              top: 50%;
+              transform: translateY(-50%);
+              width: 50px;
+              height: 50px;
+              background-color: white;
+              border-radius: 50%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+              cursor: pointer;
+              transition: all 0.3s ease;
+              z-index: 10;
+              opacity: 0;
+            }
+            
+            .slider-nav:hover {
+              background-color: #2EC4B6;
+              color: white;
+            }
+            
+            .slider-nav.prev {
+              left: -25px;
+            }
+            
+            .slider-nav.next {
+              right: -25px;
+            }
+            
+            @media (max-width: 768px) {
+              .slider-nav {
+                display: none;
+              }
+            }
+            
+            .slider-controls {
+              display: flex;
+              justify-content: center;
+              gap: 0.75rem;
+              margin-top: 3rem;
+              opacity: 0;
+            }
+            
+            .slider-dot {
+              width: 12px;
+              height: 12px;
+              border-radius: 50%;
+              background-color: #ddd;
+              cursor: pointer;
+              transition: all 0.3s ease;
+            }
+            
+            .slider-dot.active {
+              background-color: #2EC4B6;
+              transform: scale(1.3);
+            }
+          </style>
+          <div class="section-title">
+            <h2>用户的真实评价</h2>
+            <p>来自各行各业的用户对VisionPro的使用体验分享</p>
+          </div>
+          
+          <div class="reviews-container">
+            <div class="reviews-slider" id="reviewsSlider">
+              <div class="review-card">
+                <div class="review-rating">
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                </div>
+                <p class="review-text">"VisionPro彻底改变了我的工作方式。作为一名设计师，我可以直接在3D空间中进行创作，与客户实时分享和修改设计方案，效率提升了不止一倍。"</p>
+                <div class="review-author">
+                  <div class="author-avatar">
+                    <img src="https://picsum.photos/id/64/100/100" alt="用户头像">
+                  </div>
+                  <div class="author-info">
+                    <h4>张明</h4>
+                    <p>资深UI/UX设计师</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="review-card">
+                <div class="review-rating">
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                </div>
+                <p class="review-text">"作为一名外科医生，VisionPro为我的手术带来了前所未有的辅助。实时显示患者数据和3D解剖模型，让手术更加精准和安全。"</p>
+                <div class="review-author">
+                  <div class="author-avatar">
+                    <img src="https://picsum.photos/id/65/100/100" alt="用户头像">
+                  </div>
+                  <div class="author-info">
+                    <h4>李婷</h4>
+                    <p>主任医师</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="review-card">
+                <div class="review-rating">
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star-half-o"></i>
+                </div>
+                <p class="review-text">"我们工厂引进了VisionPro用于设备维护和员工培训，不仅降低了停机时间，还缩短了新员工的培训周期，投资回报率非常高。"</p>
+                <div class="review-author">
+                  <div class="author-avatar">
+                    <img src="https://picsum.photos/id/91/100/100" alt="用户头像">
+                  </div>
+                  <div class="author-info">
+                    <h4>王建国</h4>
+                    <p>生产总监</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="review-card">
+                <div class="review-rating">
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                </div>
+                <p class="review-text">"教学从此变得生动有趣！学生们通过VisionPro可以直观地观察3D模型，进行虚拟实验，理解复杂概念变得如此简单。"</p>
+                <div class="review-author">
+                  <div class="author-avatar">
+                    <img src="https://picsum.photos/id/26/100/100" alt="用户头像">
+                  </div>
+                  <div class="author-info">
+                    <h4>刘芳</h4>
+                    <p>高中物理教师</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="review-card">
+                <div class="review-rating">
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star-o"></i>
+                </div>
+                <p class="review-text">"作为科技爱好者，我体验过很多AR设备，但VisionPro的显示效果和交互体验是最出色的。虚拟与现实的融合度令人惊叹。"</p>
+                <div class="review-author">
+                  <div class="author-avatar">
+                    <img src="https://picsum.photos/id/21/100/100" alt="用户头像">
+                  </div>
+                  <div class="author-info">
+                    <h4>赵阳</h4>
+                    <p>科技博主</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="slider-nav prev" id="prevReview">
+              <i class="fa fa-chevron-left"></i>
+            </div>
+            <div class="slider-nav next" id="nextReview">
+              <i class="fa fa-chevron-right"></i>
+            </div>
+            
+            <div class="slider-controls" id="sliderControls">
+              <!-- 动态生成的滑块指示器 -->
+            </div>
+          </div>
+        `;
+      }
+      
+      connectedCallback() {
+        const sectionTitle = this.shadowRoot.querySelector('.section-title');
+        const reviewsSlider = this.shadowRoot.getElementById('reviewsSlider');
+        const reviewCards = this.shadowRoot.querySelectorAll('.review-card');
+        const prevBtn = this.shadowRoot.getElementById('prevReview');
+        const nextBtn = this.shadowRoot.getElementById('nextReview');
+        const controlsContainer = this.shadowRoot.getElementById('sliderControls');
+        
+        // 创建滑块指示器
+        reviewCards.forEach((_, index) => {
+          const dot = document.createElement('div');
+          dot.classList.add('slider-dot');
+          if (index === 0) dot.classList.add('active');
+          dot.addEventListener('click', () => goToSlide(index));
+          controlsContainer.appendChild(dot);
+        });
+        
+        const dots = this.shadowRoot.querySelectorAll('.slider-dot');
+        let currentSlide = 0;
+        let slideWidth = 0;
+        let slidesPerView = 1;
+        
+        // 计算每次滑动的宽度和每页显示的卡片数量
+        const calculateSlides = () => {
+          if (window.innerWidth >= 1024) {
+            slidesPerView = 3;
+          } else if (window.innerWidth >= 768) {
+            slidesPerView = 2;
+          } else {
+            slidesPerView = 1;
+          }
+          
+          if (reviewCards.length > 0) {
+            slideWidth = reviewCards[0].offsetWidth + 40; // 加上间距
+          }
+        };
+        
+        // 初始化计算
+        calculateSlides();
+        window.addEventListener('resize', calculateSlides);
+        
+        // 切换到指定幻灯片
+        const goToSlide = (index) => {
+          currentSlide = index;
+          const maxSlide = reviewCards.length - slidesPerView;
+          if (currentSlide > maxSlide) currentSlide = maxSlide;
+          if (currentSlide < 0) currentSlide = 0;
+          
+          reviewsSlider.scrollTo({
+            left: currentSlide * slideWidth,
+            behavior: 'smooth'
+          });
+          
+          // 更新指示器状态
+          dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentSlide);
+          });
+        };
+        
+        // 上一张/下一张控制
+        prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+        nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+        
+        // 标题动画
+        gsap.to(sectionTitle, {
+          scrollTrigger: {
+            trigger: sectionTitle,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          y: 0,
+          ease: 'power2.out'
+        });
+        
+        // 评论滑块动画
+        gsap.to(reviewsSlider, {
+          scrollTrigger: {
+            trigger: reviewsSlider,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          ease: 'power2.out'
+        });
+        
+        // 导航按钮动画
+        gsap.to([prevBtn, nextBtn], {
+          scrollTrigger: {
+            trigger: reviewsSlider,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          delay: 0.3,
+          ease: 'power2.out'
+        });
+        
+        // 滑块控制动画
+        gsap.to(controlsContainer, {
+          scrollTrigger: {
+            trigger: controlsContainer,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          delay: 0.5,
+          ease: 'power2.out'
+        });
+        
+        // 自动轮播
+        let autoplayInterval = setInterval(() => {
+          let nextSlide = currentSlide + 1;
+          if (nextSlide >= reviewCards.length - slidesPerView + 1) {
+            nextSlide = 0;
+          }
+          goToSlide(nextSlide);
+        }, 5000);
+        
+        // 鼠标悬停时暂停自动轮播
+        reviewsSlider.addEventListener('mouseenter', () => {
+          clearInterval(autoplayInterval);
+        });
+        
+        reviewsSlider.addEventListener('mouseleave', () => {
+          autoplayInterval = setInterval(() => {
+            let nextSlide = currentSlide + 1;
+            if (nextSlide >= reviewCards.length - slidesPerView + 1) {
+              nextSlide = 0;
+            }
+            goToSlide(nextSlide);
+          }, 5000);
+        });
+      }
+    }
+    customElements.define('reviews-section', ReviewsSection);
+    
+    // 订阅组件
+    class SubscribeSection extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host {
+              display: block;
+              padding: 12rem 2rem;
+              background-color: #0A2463;
+              position: relative;
+              overflow: hidden;
+              clip-path: polygon(0 0, 100% 10%, 100% 100%, 0 90%);
+            }
+            
+            .bg-elements {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              z-index: 0;
+            }
+            
+            .bg-element {
+              position: absolute;
+              background-color: rgba(46, 196, 182, 0.1);
+              border-radius: 50%;
+              filter: blur(80px);
+            }
+            
+            .subscribe-container {
+              max-width: 800px;
+              margin: 0 auto;
+              text-align: center;
+              position: relative;
+              z-index: 1;
+            }
+            
+            .section-title {
+              margin-bottom: 3rem;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .section-title h2 {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 700;
+              font-size: clamp(2rem, 4vw, 3rem);
+              color: white;
+              margin-bottom: 1rem;
+            }
+            
+            .section-title p {
+              font-size: 1.2rem;
+              color: rgba(255, 255, 255, 0.8);
+              max-width: 600px;
+              margin: 0 auto;
+            }
+            
+            .early-bird {
+              background-color: rgba(46, 196, 182, 0.2);
+              color: white;
+              padding: 1.5rem;
+              border-radius: 12px;
+              margin-bottom: 3rem;
+              display: inline-block;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .early-bird h3 {
+              font-weight: 600;
+              font-size: 1.3rem;
+              margin-bottom: 0.5rem;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              justify-content: center;
+            }
+            
+            .early-bird h3 i {
+              color: #2EC4B6;
+            }
+            
+            .early-bird p {
+              color: rgba(255, 255, 255, 0.9);
+            }
+            
+            .countdown {
+              display: flex;
+              justify-content: center;
+              gap: 1.5rem;
+              margin-bottom: 4rem;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .countdown-item {
+              background-color: rgba(255, 255, 255, 0.1);
+              border-radius: 8px;
+              padding: 1rem 1.5rem;
+              min-width: 80px;
+            }
+            
+            .countdown-value {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 700;
+              font-size: 2rem;
+              color: white;
+              margin-bottom: 0.25rem;
+            }
+            
+            .countdown-label {
+              color: rgba(255, 255, 255, 0.7);
+              font-size: 0.9rem;
+            }
+            
+            .subscribe-form {
+              display: flex;
+              flex-direction: column;
+              gap: 1.5rem;
+              max-width: 500px;
+              margin: 0 auto;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .form-group {
+              position: relative;
+            }
+            
+            .form-input {
+              width: 100%;
+              padding: 1.25rem 1.5rem;
+              border-radius: 8px;
+              border: none;
+              font-size: 1.1rem;
+              background-color: rgba(255, 255, 255, 0.1);
+              color: white;
+              transition: all 0.3s ease;
+            }
+            
+            .form-input::placeholder {
+              color: rgba(255, 255, 255, 0.5);
+            }
+            
+            .form-input:focus {
+              outline: none;
+              background-color: rgba(255, 255, 255, 0.15);
+              box-shadow: 0 0 0 3px rgba(46, 196, 182, 0.3);
+            }
+            
+            .form-select {
+              width: 100%;
+              padding: 1.25rem 1.5rem;
+              border-radius: 8px;
+              border: none;
+              font-size: 1.1rem;
+              background-color: rgba(255, 255, 255, 0.1);
+              color: white;
+              appearance: none;
+              background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+              background-repeat: no-repeat;
+              background-position: right 1.5rem center;
+              transition: all 0.3s ease;
+            }
+            
+            .form-select:focus {
+              outline: none;
+              background-color: rgba(255, 255, 255, 0.15);
+              box-shadow: 0 0 0 3px rgba(46, 196, 182, 0.3);
+            }
+            
+            .submit-button {
+              background-color: #2EC4B6;
+              color: white;
+              border: none;
+              padding: 1.25rem 1.5rem;
+              border-radius: 8px;
+              font-size: 1.1rem;
+              font-weight: 600;
+              cursor: pointer;
+              transition: all 0.3s ease;
+            }
+            
+            .submit-button:hover {
+              background-color: #1aa397;
+              transform: translateY(-3px);
+              box-shadow: 0 10px 20px rgba(46, 196, 182, 0.25);
+            }
+            
+            .privacy-note {
+              color: rgba(255, 255, 255, 0.6);
+              font-size: 0.9rem;
+              margin-top: 1rem;
+            }
+            
+            .privacy-note a {
+              color: #2EC4B6;
+              text-decoration: none;
+            }
+            
+            .privacy-note a:hover {
+              text-decoration: underline;
+            }
+          </style>
+          <div class="bg-elements">
+            <div class="bg-element" style="width: 500px; height: 500px; top: 10%; right: 5%;"></div>
+            <div class="bg-element" style="width: 400px; height: 400px; bottom: 10%; left: 5%;"></div>
+          </div>
+          
+          <div class="subscribe-container">
+            <div class="section-title">
+              <h2>抢先体验未来科技</h2>
+              <p>预订VisionPro，享受首发优惠和专属服务，成为首批体验未来科技的先锋</p>
+            </div>
+            
+            <div class="early-bird">
+              <h3><i class="fa fa-gift"></i> 早鸟优惠</h3>
+              <p>前1000名预订用户可享受8折优惠，并获赠价值999元的配件套装</p>
+            </div>
+            
+            <div class="countdown">
+              <div class="countdown-item">
+                <div class="countdown-value" id="days">00</div>
+                <div class="countdown-label">天</div>
+              </div>
+              <div class="countdown-item">
+                <div class="countdown-value" id="hours">00</div>
+                <div class="countdown-label">时</div>
+              </div>
+              <div class="countdown-item">
+                <div class="countdown-value" id="minutes">00</div>
+                <div class="countdown-label">分</div>
+              </div>
+              <div class="countdown-item">
+                <div class="countdown-value" id="seconds">00</div>
+                <div class="countdown-label">秒</div>
+              </div>
+            </div>
+            
+            <form class="subscribe-form" id="subscribeForm">
+              <div class="form-group">
+                <input type="text" class="form-input" placeholder="您的姓名" required>
+              </div>
+              <div class="form-group">
+                <input type="email" class="form-input" placeholder="您的邮箱" required>
+              </div>
+              <div class="form-group">
+                <select class="form-select" required>
+                  <option value="" disabled selected>选择版本</option>
+                  <option value="basic">基础版</option>
+                  <option value="pro">专业版</option>
+                  <option value="enterprise">企业版</option>
+                </select>
+              </div>
+              <button type="submit" class="submit-button">立即预订</button>
+              <p class="privacy-note">提交即表示您同意我们的<a href="#">隐私政策</a>和<a href="#">服务条款</a></p>
+            </form>
+          </div>
+        `;
+      }
+      
+      connectedCallback() {
+        const sectionTitle = this.shadowRoot.querySelector('.section-title');
+        const earlyBird = this.shadowRoot.querySelector('.early-bird');
+        const countdown = this.shadowRoot.querySelector('.countdown');
+        const subscribeForm = this.shadowRoot.querySelector('.subscribe-form');
+        const daysEl = this.shadowRoot.getElementById('days');
+        const hoursEl = this.shadowRoot.getElementById('hours');
+        const minutesEl = this.shadowRoot.getElementById('minutes');
+        const secondsEl = this.shadowRoot.getElementById('seconds');
+        const form = this.shadowRoot.getElementById('subscribeForm');
+        
+        // 标题动画
+        gsap.to(sectionTitle, {
+          scrollTrigger: {
+            trigger: sectionTitle,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          y: 0,
+          ease: 'power2.out'
+        });
+        
+        // 早鸟优惠动画
+        gsap.to(earlyBird, {
+          scrollTrigger: {
+            trigger: earlyBird,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          y: 0,
+          delay: 0.2,
+          ease: 'power2.out'
+        });
+        
+        // 倒计时动画
+        gsap.to(countdown, {
+          scrollTrigger: {
+            trigger: countdown,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          y: 0,
+          delay: 0.4,
+          ease: 'power2.out'
+        });
+        
+        // 表单动画
+        gsap.to(subscribeForm, {
+          scrollTrigger: {
+            trigger: subscribeForm,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          y: 0,
+          delay: 0.6,
+          ease: 'power2.out'
+        });
+        
+        // 倒计时功能
+        const updateCountdown = () => {
+          // 设置倒计时结束日期（当前日期加30天）
+          const endDate = new Date();
+          endDate.setDate(endDate.getDate() + 30);
+          
+          const now = new Date();
+          const diff = endDate - now;
+          
+          if (diff <= 0) {
+            daysEl.textContent = '00';
+            hoursEl.textContent = '00';
+            minutesEl.textContent = '00';
+            secondsEl.textContent = '00';
+            return;
+          }
+          
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+          
+          daysEl.textContent = days.toString().padStart(2, '0');
+          hoursEl.textContent = hours.toString().padStart(2, '0');
+          minutesEl.textContent = minutes.toString().padStart(2, '0');
+          secondsEl.textContent = seconds.toString().padStart(2, '0');
+        };
+        
+        // 初始化倒计时
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+        
+        // 表单提交处理
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          
+          // 模拟提交成功
+          const submitBtn = form.querySelector('.submit-button');
+          const originalText = submitBtn.textContent;
+          
+          submitBtn.disabled = true;
+          submitBtn.textContent = '提交中...';
+          
+          setTimeout(() => {
+            submitBtn.textContent = '提交成功!';
+            submitBtn.style.backgroundColor = '#4CAF50';
+            
+            // 重置表单
+            form.reset();
+            
+            // 恢复按钮状态
+            setTimeout(() => {
+              submitBtn.disabled = false;
+              submitBtn.textContent = originalText;
+              submitBtn.style.backgroundColor = '';
+            }, 2000);
+          }, 1500);
+        });
+      }
+    }
+    customElements.define('subscribe-section', SubscribeSection);
+    
+    // 页脚组件
+    class FooterSection extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host {
+              display: block;
+              background-color: #051441;
+              color: rgba(255, 255, 255, 0.7);
+              padding: 8rem 2rem 3rem;
+              position: relative;
+            }
+            
+            .footer-container {
+              max-width: 1200px;
+              margin: 0 auto;
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+              gap: 4rem;
+              margin-bottom: 6rem;
+            }
+            
+            .footer-column {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .footer-logo {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              margin-bottom: 1.5rem;
+              text-decoration: none;
+            }
+            
+            .footer-logo img {
+              height: 40px;
+            }
+            
+            .footer-logo-text {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 700;
+              font-size: 1.5rem;
+              color: white;
+            }
+            
+            .footer-description {
+              line-height: 1.6;
+              margin-bottom: 2rem;
+            }
+            
+            .social-links {
+              display: flex;
+              gap: 1.5rem;
+            }
+            
+            .social-link {
+              width: 40px;
+              height: 40px;
+              border-radius: 50%;
+              background-color: rgba(255, 255, 255, 0.1);
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              color: white;
+              transition: all 0.3s ease;
+            }
+            
+            .social-link:hover {
+              background-color: #2EC4B6;
+              transform: translateY(-3px);
+            }
+            
+            .footer-column h3 {
+              font-family: 'Montserrat', sans-serif;
+              font-weight: 600;
+              font-size: 1.2rem;
+              color: white;
+              margin-bottom: 1.5rem;
+              position: relative;
+              padding-bottom: 0.75rem;
+            }
+            
+            .footer-column h3::after {
+              content: '';
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              width: 40px;
+              height: 3px;
+              background-color: #2EC4B6;
+              border-radius: 3px;
+            }
+            
+            .footer-links {
+              list-style: none;
+              padding: 0;
+              margin: 0;
+            }
+            
+            .footer-links li {
+              margin-bottom: 1rem;
+            }
+            
+            .footer-link {
+              color: rgba(255, 255, 255, 0.7);
+              text-decoration: none;
+              transition: all 0.3s ease;
+              display: inline-block;
+            }
+            
+            .footer-link:hover {
+              color: #2EC4B6;
+              transform: translateX(5px);
+            }
+            
+            .contact-item {
+              display: flex;
+              align-items: flex-start;
+              gap: 1rem;
+              margin-bottom: 1.5rem;
+              line-height: 1.6;
+            }
+            
+            .contact-item i {
+              color: #2EC4B6;
+              margin-top: 4px;
+            }
+            
+            .newsletter-form {
+              display: flex;
+              margin-top: 1rem;
+            }
+            
+            .newsletter-input {
+              flex: 1;
+              padding: 0.75rem 1rem;
+              border: none;
+              border-radius: 4px 0 0 4px;
+              font-size: 1rem;
+              background-color: rgba(255, 255, 255, 0.1);
+              color: white;
+            }
+            
+            .newsletter-input::placeholder {
+              color: rgba(255, 255, 255, 0.5);
+            }
+            
+            .newsletter-input:focus {
+              outline: none;
+              background-color: rgba(255, 255, 255, 0.15);
+            }
+            
+            .newsletter-button {
+              background-color: #2EC4B6;
+              color: white;
+              border: none;
+              padding: 0 1.25rem;
+              border-radius: 0 4px 4px 0;
+              font-weight: 600;
+              cursor: pointer;
+              transition: all 0.3s ease;
+            }
+            
+            .newsletter-button:hover {
+              background-color: #1aa397;
+            }
+            
+            .footer-bottom {
+              max-width: 1200px;
+              margin: 0 auto;
+              padding-top: 3rem;
+              border-top: 1px solid rgba(255, 255, 255, 0.1);
+              display: flex;
+              flex-direction: column;
+              gap: 1.5rem;
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            
+            .copyright {
+              text-align: center;
+            }
+            
+            .bottom-links {
+              display: flex;
+              justify-content: center;
+              flex-wrap: wrap;
+              gap: 2rem;
+            }
+            
+            .bottom-link {
+              color: rgba(255, 255, 255, 0.7);
+              text-decoration: none;
+              transition: all 0.3s ease;
+              font-size: 0.9rem;
+            }
+            
+            .bottom-link:hover {
+              color: #2EC4B6;
+            }
+            
+            @media (min-width: 768px) {
+              .footer-bottom {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+              }
+              
+              .copyright {
+                text-align: left;
+              }
+              
+              .bottom-links {
+                justify-content: flex-end;
+              }
+            }
+          </style>
+          <div class="footer-container">
+            <div class="footer-column" data-delay="0">
+              <a href="#" class="footer-logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="20" cy="20" r="18" stroke="#2EC4B6" stroke-width="4"/>
+                  <path d="M12 20H28M20 12V28" stroke="#2EC4B6" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+                <span class="footer-logo-text">VisionPro</span>
+              </a>
+              <p class="footer-description">重新定义你眼中的世界，VisionPro AR眼镜将数字信息无缝融入现实世界，开启沉浸式体验新纪元。</p>
+              <div class="social-links">
+                <a href="#" class="social-link"><i class="fa fa-facebook"></i></a>
+                <a href="#" class="social-link"><i class="fa fa-twitter"></i></a>
+                <a href="#" class="social-link"><i class="fa fa-instagram"></i></a>
+                <a href="#" class="social-link"><i class="fa fa-linkedin"></i></a>
+                <a href="#" class="social-link"><i class="fa fa-youtube-play"></i></a>
+              </div>
+            </div>
+            
+            <div class="footer-column" data-delay="0.2">
+              <h3>产品</h3>
+              <ul class="footer-links">
+                <li><a href="#" class="footer-link">基础版</a></li>
+                <li><a href="#" class="footer-link">专业版</a></li>
+                <li><a href="#" class="footer-link">企业版</a></li>
+                <li><a href="#" class="footer-link">配件</a></li>
+                <li><a href="#" class="footer-link">比较</a></li>
+                <li><a href="#" class="footer-link">技术规格</a></li>
+              </ul>
+            </div>
+            
+            <div class="footer-column" data-delay="0.4">
+              <h3>资源</h3>
+              <ul class="footer-links">
+                <li><a href="#" class="footer-link">开发者中心</a></li>
+                <li><a href="#" class="footer-link">应用商店</a></li>
+                <li><a href="#" class="footer-link">教程</a></li>
+                <li><a href="#" class="footer-link">博客</a></li>
+                <li><a href="#" class="footer-link">帮助中心</a></li>
+                <li><a href="#" class="footer-link">合作伙伴</a></li>
+              </ul>
+            </div>
+            
+            <div class="footer-column" data-delay="0.6">
+              <h3>公司</h3>
+              <ul class="footer-links">
+                <li><a href="#" class="footer-link">关于我们</a></li>
+                <li><a href="#" class="footer-link">招贤纳士</a></li>
+                <li><a href="#" class="footer-link">新闻中心</a></li>
+                <li><a href="#" class="footer-link">联系我们</a></li>
+                <li><a href="#" class="footer-link">隐私政策</a></li>
+                <li><a href="#" class="footer-link">服务条款</a></li>
+              </ul>
+            </div>
+            
+            <div class="footer-column" data-delay="0.8">
+              <h3>联系我们</h3>
+              <div class="contact-item">
+                <i class="fa fa-map-marker fa-lg"></i>
+                <span>北京市海淀区中关村科技园区8号楼 未来科技大厦 15层</span>
+              </div>
+              <div class="contact-item">
+                <i class="fa fa-phone fa-lg"></i>
+                <span>400-888-9999</span>
+              </div>
+              <div class="contact-item">
+                <i class="fa fa-envelope fa-lg"></i>
+                <span>contact@visionpro.com</span>
+              </div>
+              <h3 style="margin-top: 2rem;">订阅新闻</h3>
+              <form class="newsletter-form">
+                <input type="email" class="newsletter-input" placeholder="您的邮箱" required>
+                <button type="submit" class="newsletter-button">订阅</button>
+              </form>
+            </div>
+          </div>
+          
+          <div class="footer-bottom">
+            <div class="copyright">© 2023 VisionPro. 保留所有权利。</div>
+            <div class="bottom-links">
+              <a href="#" class="bottom-link">隐私政策</a>
+              <a href="#" class="bottom-link">服务条款</a>
+              <a href="#" class="bottom-link">Cookie 政策</a>
+              <a href="#" class="bottom-link">网站地图</a>
+            </div>
+          </div>
+        `;
+      }
+      
+      connectedCallback() {
+        const footerColumns = this.shadowRoot.querySelectorAll('.footer-column');
+        const footerBottom = this.shadowRoot.querySelector('.footer-bottom');
+        
+        // 页脚列动画
+        footerColumns.forEach(column => {
+          const delay = column.getAttribute('data-delay');
+          gsap.to(column, {
+            scrollTrigger: {
+              trigger: column,
+              start: 'top 90%',
+              end: 'top 70%',
+              toggleActions: 'play none none reverse'
+            },
+            duration: 0.8,
+            opacity: 1,
+            y: 0,
+            delay: delay,
+            ease: 'power2.out'
+          });
+        });
+        
+        // 页脚底部动画
+        gsap.to(footerBottom, {
+          scrollTrigger: {
+            trigger: footerBottom,
+            start: 'top 90%',
+            end: 'top 70%',
+            toggleActions: 'play none none reverse'
+          },
+          duration: 0.8,
+          opacity: 1,
+          y: 0,
+          delay: 0.5,
+          ease: 'power2.out'
+        });
+        
+        // 订阅表单处理
+        const newsletterForm = this.shadowRoot.querySelector('.newsletter-form');
+        newsletterForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          
+          // 模拟提交
+          const input = newsletterForm.querySelector('.newsletter-input');
+          const button = newsletterForm.querySelector('.newsletter-button');
+          const originalText = button.textContent;
+          
+          button.disabled = true;
+          button.textContent = '订阅中...';
+          
+          setTimeout(() => {
+            button.textContent = '✓ 订阅成功';
+            input.value = '';
+            
+            setTimeout(() => {
+              button.disabled = false;
+              button.textContent = originalText;
+            }, 2000);
+          }, 1500);
+        });
+      }
+    }
+    customElements.define('footer-section', FooterSection);
+    
+    // 页面加载完成后初始化所有动画
+    window.addEventListener('load', () => {
+      // 全局滚动动画配置
+      gsap.config({
+        autoSleep: 60,
+        force3D: false
+      });
+      
+      // 平滑滚动
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href');
+          if (targetId === '#') return;
+          
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth'
+            });
+            
+            // 如果是移动端，点击后关闭菜单
+            const mobileMenu = document.querySelector('nav-bar').shadowRoot.querySelector('.nav-links');
+            if (mobileMenu.classList.contains('active')) {
+              mobileMenu.classList.remove('active');
+            }
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

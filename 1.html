@@ -1,0 +1,2658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Resume</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.4/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.4/dist/ScrollTrigger.min.js"></script>
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .transition-custom {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+        }
+    </style>
+    
+    <style>
+        /* 全局样式 */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            overflow-x: hidden;
+        }
+        
+        /* Web Component 样式隔离 */
+        resume-header::part(container) {
+            @apply relative overflow-hidden;
+        }
+        
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            @apply bg-gray-100;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            @apply bg-primary rounded-full hover:bg-primary/80;
+        }
+        
+        /* 动画延迟类 */
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+        .delay-400 { animation-delay: 400ms; }
+        .delay-500 { animation-delay: 500ms; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-dark">
+    <!-- 导航组件 -->
+    <resume-nav></resume-nav>
+    
+    <!-- 头部组件 -->
+    <resume-header></resume-header>
+    
+    <!-- 关于我组件 -->
+    <resume-about></resume-about>
+    
+    <!-- 技能组件 -->
+    <resume-skills></resume-skills>
+    
+    <!-- 工作经历组件 -->
+    <resume-experience></resume-experience>
+    
+    <!-- 教育背景组件 -->
+    <resume-education></resume-education>
+    
+    <!-- 项目展示组件 -->
+    <resume-projects></resume-projects>
+    
+    <!-- 联系方式组件 -->
+    <resume-contact></resume-contact>
+    
+    <!-- 页脚组件 -->
+    <resume-footer></resume-footer>
+
+    <script>
+        // 注册 GSAP 插件
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // 导航组件
+        class ResumeNav extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+                this.shadowRoot.innerHTML = `
+                    <style>
+                        :host {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            z-index: 1000;
+                            transition: all 0.3s ease;
+                        }
+                        
+                        .nav-container {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 1rem 5%;
+                            background-color: rgba(255, 255, 255, 0.95);
+                            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                            transition: all 0.3s ease;
+                        }
+                        
+                        .logo {
+                            font-size: 1.5rem;
+                            font-weight: 700;
+                            color: var(--primary-color, #3B82F6);
+                            text-decoration: none;
+                        }
+                        
+                        .nav-links {
+                            display: flex;
+                            list-style: none;
+                            margin: 0;
+                            padding: 0;
+                        }
+                        
+                        .nav-links li {
+                            margin-left: 2rem;
+                        }
+                        
+                        .nav-links a {
+                            text-decoration: none;
+                            color: #1E293B;
+                            font-weight: 500;
+                            transition: color 0.3s ease;
+                            position: relative;
+                        }
+                        
+                        .nav-links a:hover {
+                            color: var(--primary-color, #3B82F6);
+                        }
+                        
+                        .nav-links a::after {
+                            content: '';
+                            position: absolute;
+                            width: 0;
+                            height: 2px;
+                            bottom: -4px;
+                            left: 0;
+                            background-color: var(--primary-color, #3B82F6);
+                            transition: width 0.3s ease;
+                        }
+                        
+                        .nav-links a:hover::after {
+                            width: 100%;
+                        }
+                        
+                        .mobile-toggle {
+                            display: none;
+                            background: none;
+                            border: none;
+                            font-size: 1.5rem;
+                            cursor: pointer;
+                            color: #1E293B;
+                        }
+                        
+                        @media (max-width: 768px) {
+                            .nav-links {
+                                position: absolute;
+                                top: 100%;
+                                left: 0;
+                                right: 0;
+                                flex-direction: column;
+                                background-color: white;
+                                padding: 1rem 5%;
+                                box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+                                transform: translateY(-100%);
+                                opacity: 0;
+                                pointer-events: none;
+                                transition: all 0.3s ease;
+                            }
+                            
+                            .nav-links.active {
+                                transform: translateY(0);
+                                opacity: 1;
+                                pointer-events: all;
+                            }
+                            
+                            .nav-links li {
+                                margin: 0.75rem 0;
+                            }
+                            
+                            .mobile-toggle {
+                                display: block;
+                            }
+                        }
+                    </style>
+                    <div class="nav-container">
+                        <a href="#" class="logo">John Doe</a>
+                        <button class="mobile-toggle">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <ul class="nav-links">
+                            <li><a href="#about">About</a></li>
+                            <li><a href="#skills">Skills</a></li>
+                            <li><a href="#experience">Experience</a></li>
+                            <li><a href="#education">Education</a></li>
+                            <li><a href="#projects">Projects</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                `;
+                
+                // 绑定事件处理函数
+                this.mobileToggle = this.shadowRoot.querySelector('.mobile-toggle');
+                this.navLinks = this.shadowRoot.querySelector('.nav-links');
+                this.navLinks.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (window.innerWidth <= 768) {
+                            this.navLinks.classList.remove('active');
+                        }
+                    });
+                });
+            }
+            
+            connectedCallback() {
+                this.mobileToggle.addEventListener('click', () => {
+                    this.navLinks.classList.toggle('active');
+                });
+                
+                // 滚动时改变导航栏样式
+                window.addEventListener('scroll', () => {
+                    const navContainer = this.shadowRoot.querySelector('.nav-container');
+                    if (window.scrollY > 50) {
+                        navContainer.classList.add('py-2');
+                        navContainer.classList.remove('py-4');
+                    } else {
+                        navContainer.classList.add('py-4');
+                        navContainer.classList.remove('py-2');
+                    }
+                });
+            }
+        }
+        
+        customElements.define('resume-nav', ResumeNav);
+        
+        // 头部组件
+        class ResumeHeader extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+                this.shadowRoot.innerHTML = `
+                    <style>
+                        :host {
+                            display: block;
+                            height: 100vh;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            position: relative;
+                            overflow: hidden;
+                        }
+                        
+                        .header-container {
+                            text-align: center;
+                            z-index: 2;
+                            padding: 0 1rem;
+                        }
+                        
+                        .profile-img {
+                            width: 180px;
+                            height: 180px;
+                            border-radius: 50%;
+                            object-fit: cover;
+                            border: 5px solid white;
+                            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+                            margin-bottom: 1.5rem;
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        
+                        .title {
+                            font-size: 3rem;
+                            font-weight: 800;
+                            margin: 0 0 0.5rem 0;
+                            color: #1E293B;
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        
+                        .subtitle {
+                            font-size: 1.25rem;
+                            color: #64748B;
+                            margin: 0 0 2rem 0;
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        
+                        .social-links {
+                            display: flex;
+                            justify-content: center;
+                            gap: 1rem;
+                            margin-bottom: 2rem;
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        
+                        .social-links a {
+                            width: 45px;
+                            height: 45px;
+                            border-radius: 50%;
+                            background-color: #EFF6FF;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: #3B82F6;
+                            font-size: 1.25rem;
+                            transition: all 0.3s ease;
+                            text-decoration: none;
+                        }
+                        
+                        .social-links a:hover {
+                            background-color: #3B82F6;
+                            color: white;
+                            transform: translateY(-5px);
+                        }
+                        
+                        .cta-button {
+                            background-color: #3B82F6;
+                            color: white;
+                            border: none;
+                            padding: 0.75rem 2rem;
+                            border-radius: 30px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            text-decoration: none;
+                            display: inline-block;
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        
+                        .cta-button:hover {
+                            background-color: #2563EB;
+                            transform: translateY(-5px);
+                            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+                        }
+                        
+                        .bg-pattern {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background-image: radial-gradient(#3B82F611 1px, transparent 1px);
+                            background-size: 30px 30px;
+                            z-index: 1;
+                        }
+                        
+                        @media (max-width: 768px) {
+                            .title {
+                                font-size: 2.25rem;
+                            }
+                        }
+                    </style>
+                    <div class="bg-pattern"></div>
+                    <div class="header-container" part="container">
+                        <img src="https://picsum.photos/id/1005/200/200" alt="Profile Picture" class="profile-img">
+                        <h1 class="title">John Doe</h1>
+                        <p class="subtitle">Senior Frontend Developer & UI/UX Specialist</p>
+                        <div class="social-links">
+                            <a href="#" aria-label="GitHub"><i class="fa fa-github"></i></a>
+                            <a href="#" aria-label="LinkedIn"><i class="fa fa-linkedin"></i></a>
+                            <a href="#" aria-label="Twitter"><i class="fa fa-twitter"></i></a>
+                            <a href="#" aria-label="Dribbble"><i class="fa fa-dribbble"></i></a>
+                        </div>
+                        <a href="#contact" class="cta-button">Get In Touch</a>
+                    </div>
+                `;
+            }
+            
+            connectedCallback() {
+                // 页面加载动画
+                const elements = [
+                    this.shadowRoot.querySelector('.profile-img'),
+                    this.shadowRoot.querySelector('.title'),
+                    this.shadowRoot.querySelector('.subtitle'),
+                    this.shadowRoot.querySelector('.social-links'),
+                    this.shadowRoot.querySelector('.cta-button')
+                ];
+                
+                elements.forEach((el, index) => {
+                    gsap.to(el, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.6,
+                        delay: 0.2 + (index * 0.2),
+                        ease: 'power2.out'
+                    });
+                });
+                
+                // 背景图案动画
+                gsap.to(this.shadowRoot.querySelector('.bg-pattern'), {
+                    backgroundPosition: '15px 15px',
+                    duration: 10,
+                    repeat: -1,
+                    ease: 'linear'
+                });
+            }
+        }
+        
+        customElements.define('resume-header', ResumeHeader);
+        
+        // 关于我组件
+        class ResumeAbout extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+                this.shadowRoot.innerHTML = `
+                    <style>
+                        :host {
+                            display: block;
+                            padding: 10rem 5%;
+                            background-color: white;
+                        }
+                        
+                        .section-title {
+                            text-align: center;
+                            margin-bottom: 5rem;
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        
+                        .section-title h2 {
+                            font-size: 2.5rem;
+                            font-weight: 800;
+                            margin: 0 0 0.5rem 0;
+                            color: #1E293B;
+                            position: relative;
+                            display: inline-block;
+                        }
+                        
+                        .section-title h2::after {
+                            content: '';
+                            position: absolute;
+                            bottom: -10px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            width: 60px;
+                            height: 4px;
+                            background-color: #3B82F6;
+                            border-radius: 2px;
+                        }
+                        
+                        .section-title p {
+                            color: #64748B;
+                            max-width: 700px;
+                            margin: 0 auto;
+                            font-size: 1.1rem;
+                        }
+                        
+                        .about-container {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 5rem;
+                            align-items: center;
+                        }
+                        
+                        .about-image {
+                            position: relative;
+                            opacity: 0;
+                            transform: translateX(-30px);
+                        }
+                        
+                        .about-image img {
+                            width: 100%;
+                            max-width: 500px;
+                            border-radius: 10px;
+                            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
+                        }
+                        
+                        .about-image::after {
+                            content: '';
+                            position: absolute;
+                            width: 100%;
+                            height: 100%;
+                            border: 3px solid #3B82F6;
+                            border-radius: 10px;
+                            top: 20px;
+                            left: 20px;
+                            z-index: -1;
+                        }
+                        
+                        .about-content {
+                            opacity: 0;
+                            transform: translateX(30px);
+                        }
+                        
+                        .about-content p {
+                            color: #64748B;
+                            margin-bottom: 1.5rem;
+                            line-height: 1.8;
+                            font-size: 1.1rem;
+                        }
+                        
+                        .about-content p:first-of-type {
+                            font-size: 1.2rem;
+                            color: #1E293B;
+                            font-weight: 500;
+                        }
+                        
+                        .personal-info {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 1rem;
+                            margin: 2rem 0;
+                        }
+                        
+                        .info-item {
+                            display: flex;
+                            align-items: center;
+                        }
+                        
+                        .info-item i {
+                            color: #3B82F6;
+                            margin-right: 0.75rem;
+                            width: 20px;
+                        }
+                        
+                        .info-item span:first-of-type {
+                            font-weight: 600;
+                            margin-right: 0.5rem;
+                            color: #1E293B;
+                        }
+                        
+                        .info-item span:last-of-type {
+                            color: #64748B;
+                        }
+                        
+                        .download-button {
+                            display: inline-flex;
+                            align-items: center;
+                            background-color: #3B82F6;
+                            color: white;
+                            padding: 0.75rem 1.5rem;
+                            border-radius: 5px;
+                            font-weight: 600;
+                            text-decoration: none;
+                            transition: all 0.3s ease;
+                            margin-top: 1rem;
+                        }
+                        
+                        .download-button i {
+                            margin-right: 0.5rem;
+                        }
+                        
+                        .download-button:hover {
+                            background-color: #2563EB;
+                            transform: translateY(-3px);
+                            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+                        }
+                        
+                        @media (max-width: 992px) {
+                            .about-container {
+                                grid-template-columns: 1fr;
+                            }
+                            
+                            .about-image {
+                                margin: 0 auto;
+                            }
+                        }
+                        
+                        @media (max-width: 768px) {
+                            .section-title h2 {
+                                font-size: 2rem;
+                            }
+                            
+                            .personal-info {
+                                grid-template-columns: 1fr;
+                            }
+                        }
+                    </style>
+                    <div id="about" class="about-section">
+                        <div class="section-title">
+                            <h2>About Me</h2>
+                            <p>Passionate frontend developer with 8+ years of experience creating user-friendly and responsive web applications</p>
+                        </div>
+                        
+                        <div class="about-container">
+                            <div class="about-image">
+                                <img src="https://picsum.photos/id/1012/600/800" alt="About John Doe">
+                            </div>
+                            
+                            <div class="about-content">
+                                <p>Hello! I'm John, a senior frontend developer with a passion for creating beautiful, functional, and user-centered digital experiences.</p>
+                                
+                                <p>With over 8 years of experience in the industry, I've had the opportunity to work with amazing teams on projects ranging from small business websites to large-scale web applications. My approach combines technical expertise with a strong design sensibility to build solutions that not only work well but also look great.</p>
+                                
+                                <p>I specialize in modern JavaScript frameworks, responsive design, and creating seamless user interactions. I'm constantly learning and staying up-to-date with the latest web technologies and best practices.</p>
+                                
+                                <div class="personal-info">
+                                    <div class="info-item">
+                                        <i class="fa fa-user"></i>
+                                        <span>Name:</span>
+                                        <span>John Doe</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="fa fa-calendar"></i>
+                                        <span>Age:</span>
+                                        <span>32</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="fa fa-map-marker"></i>
+                                        <span>Location:</span>
+                                        <span>San Francisco, CA</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="fa fa-envelope"></i>
+                                        <span>Email:</span>
+                                        <span>john.doe@example.com</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="fa fa-phone"></i>
+                                        <span>Phone:</span>
+                                        <span>+1 (555) 123-4567</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="fa fa-graduation-cap"></i>
+                                        <span>Degree:</span>
+                                        <span>Master's in CS</span>
+                                    </div>
+                                </div>
+                                
+                                <a href="#" class="download-button">
+                                    <i class="fa fa-download"></i>
+                                    Download Resume
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            connectedCallback() {
+                // 滚动触发动画
+                const animateOnScroll = (selector, options = {}) => {
+                    gsap.to(this.shadowRoot.querySelector(selector), {
+                        ...options,
+                        scrollTrigger: {
+                            trigger: selector,
+                            start: 'top 80%',
+                            end: 'top 50%',
+                            toggleActions: 'play none none reverse'
+                        }
+                    });
+                };
+                
+                animateOnScroll('.section-title', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8
+                });
+                
+                animateOnScroll('.about-image', {
+                    opacity: 1,
+                    x: 0,
+                    duration: 0.8,
+                    delay: 0.2
+                });
+                
+                animateOnScroll('.about-content', {
+                    opacity: 1,
+                    x: 0,
+                    duration: 0.8,
+                    delay: 0.4
+                });
+            }
+        }
+        
+        customElements.define('resume-about', ResumeAbout);
+        
+        // 技能组件
+        class ResumeSkills extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+                this.shadowRoot.innerHTML = `
+                    <style>
+                        :host {
+                            display: block;
+                            padding: 10rem 5%;
+                            background-color: #F8FAFC;
+                        }
+                        
+                        .section-title {
+                            text-align: center;
+                            margin-bottom: 5rem;
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        
+                        .section-title h2 {
+                            font-size: 2.5rem;
+                            font-weight: 800;
+                            margin: 0 0 0.5rem 0;
+                            color: #1E293B;
+                            position: relative;
+                            display: inline-block;
+                        }
+                        
+                        .section-title h2::after {
+                            content: '';
+                            position: absolute;
+                            bottom: -10px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            width: 60px;
+                            height: 4px;
+                            background-color: #3B82F6;
+                            border-radius: 2px;
+                        }
+                        
+                        .section-title p {
+                            color: #64748B;
+                            max-width: 700px;
+                            margin: 0 auto;
+                            font-size: 1.1rem;
+                        }
+                        
+                        .skills-container {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 5rem;
+                        }
+                        
+                        .technical-skills {
+                            opacity: 0;
+                            transform: translateX(-30px);
+                        }
+                        
+                        .skill-category {
+                            margin-bottom: 2rem;
+                        }
+                        
+                        .skill-category h3 {
+                            font-size: 1.25rem;
+                            margin-bottom: 1rem;
+                            color: #1E293B;
+                            display: flex;
+                            align-items: center;
+                        }
+                        
+                        .skill-category h3 i {
+                            color: #3B82F6;
+                            margin-right: 0.5rem;
+                        }
+                        
+                        .skill-bar {
+                            margin-bottom: 1rem;
+                        }
+                        
+                        .skill-bar-info {
+                            display: flex;
+                            justify-content: space-between;
+                            margin-bottom: 0.5rem;
+                        }
+                        
+                        .skill-bar-info span {
+                            font-weight: 600;
+                            color: #1E293B;
+                        }
+                        
+                        .skill-bar-container {
+                            height: 8px;
+                            background-color: #E2E8F0;
+                            border-radius: 4px;
+                            overflow: hidden;
+                        }
+                        
+                        .skill-bar-fill {
+                            height: 100%;
+                            background-color: #3B82F6;
+                            border-radius: 4px;
+                            width: 0;
+                            transition: width 1s ease;
+                        }
+                        
+                        .professional-skills {
+                            opacity: 0;
+                            transform: translateX(30px);
+                        }
+                        
+                        .chart-container {
+                            width: 100%;
+                            height: 400px;
+                            position: relative;
+                        }
+                        
+                        @media (max-width: 992px) {
+                            .skills-container {
+                                grid-template-columns: 1fr;
+                            }
+                        }
+                        
+                        @media (max-width: 768px) {
+                            .section-title h2 {
+                                font-size: 2rem;
+                            }
+                            
+                            .chart-container {
+                                height: 300px;
+                            }
+                        }
+                    </style>
+                    <div id="skills" class="skills-section">
+                        <div class="section-title">
+                            <h2>My Skills</h2>
+                            <p>A combination of technical expertise and professional skills that enable me to deliver high-quality web solutions</p>
+                        </div>
+                        
+                        <div class="skills-container">
+                            <div class="technical-skills">
+                                <div class="skill-category">
+                                    <h3><i class="fa fa-code"></i> Frontend Development</h3>
+                                    <div class="skill-bar">
+                                        <div class="skill-bar-info">
+                                            <span>HTML5 & CSS3</span>
+                                            <span>95%</span>
+                                        </div>
+                                        <div class="skill-bar-container">
+                                            <div class="skill-bar-fill" data-percent="95"></div>
+                                        </div>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-bar-info">
+                                            <span>JavaScript (ES6+)</span>
+                                            <span>90%</span>
+                                        </div>
+                                        <div class="skill-bar-container">
+                                            <div class="skill-bar-fill" data-percent="90"></div>
+                                        </div>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-bar-info">
+                                            <span>React & Vue.js</span>
+                                            <span>85%</span>
+                                        </div>
+                                        <div class="skill-bar-container">
+                                            <div class="skill-bar-fill" data-percent="85"></div>
+                                        </div>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-bar-info">
+                                            <span>Responsive Design</span>
+                                            <span>90%</span>
+                                        </div>
+                                        <div class="skill-bar-container">
+                                            <div class="skill-bar-fill" data-percent="90"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="skill-category">
+                                    <h3><i class="fa fa-paint-brush"></i> Design & UI/UX</h3>
+                                    <div class="skill-bar">
+                                        <div class="skill-bar-info">
+                                            <span>Figma & Adobe XD</span>
+                                            <span>80%</span>
+                                        </div>
+                                        <div class="skill-bar-container">
+                                            <div class="skill-bar-fill" data-percent="80"></div>
+                                        </div>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-bar-info">
+                                            <span>UI Design Principles</span>
+                                            <span>85%</span>
+                                        </div>
+                                        <div class="skill-bar-container">
+                                            <div class="skill-bar-fill" data-percent="85"></div>
+                                        </div>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-bar-info">
+                                            <span>Animation & Transitions</span>
+                                            <span>80%</span>
+                                        </div>
+                                        <div class="skill-bar-container">
+                                            <div class="skill-bar-fill" data-percent="80"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="skill-category">
+                                    <h3><i class="fa fa-cogs"></i> Tools & Workflow</h3>
+                                    <div class="skill-bar">
+                                        <div class="skill-bar-info">
+                                            <span>Git & Version Control</span>
+                                            <span>90%</span>
+                                        </div>
+                                        <div class="skill-bar-container">
+                                            <div class="skill-bar-fill" data-percent="90"></div>
+                                        </div>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-bar-info">
+                                            <span>Webpack & Babel</span>
+                                            <span>85%</span>
+                                        </div>
+                                        <div class="skill-bar-container">
+                                            <div class="skill-bar-fill" data-percent="85"></div>
+                                        </div>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-bar-info">
+                                            <span>CI/CD Pipelines</span>
+                                            <span>75%</span>
+                                        </div>
+                                        <div class="skill-bar-container">
+                                            <div class="skill-bar-fill" data-percent="75"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="professional-skills">
+                                <div class="skill-category">
+                                    <h3><i class="fa fa-line-chart"></i> Professional Competencies</h3>
+                                    <div class="chart-container">
+                                        <canvas id="skillsChart"></canvas>
+                                    </div>
+                                </div>
+                                
+                                <div class="skill-category mt-8">
+                                    <h3><i class="fa fa-language"></i> Languages</h3>
+                                    <div class="skill-bar">
+                                        <div class="skill-bar-info">
+                                            <span>English (Native)</span>
+                                            <span>100%</span>
+                                        </div>
+                                        <div class="skill-bar-container">
+                                            <div class="skill-bar-fill" data-percent="100"></div>
+                                        </div>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-bar-info">
+                                            <span>Spanish (Fluent)</span>
+                                            <span>85%</span>
+                                        </div>
+                                        <div class="skill-bar-container">
+                                            <div class="skill-bar-fill" data-percent="85"></div>
+                                        </div>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-bar-info">
+                                            <span>French (Conversational)</span>
+                                            <span>60%</span>
+                                        </div>
+                                        <div class="skill-bar-container">
+                                            <div class="skill-bar-fill" data-percent="60"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            connectedCallback() {
+                // 初始化技能图表
+                const ctx = this.shadowRoot.getElementById('skillsChart').getContext('2d');
+                const skillsChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: [
+                            'Problem Solving',
+                            'Team Collaboration',
+                            'Communication',
+                            'Project Management',
+                            'Time Management',
+                            'Adaptability',
+                            'Creativity'
+                        ],
+                        datasets: [{
+                            label: 'Professional Skills',
+                            data: [90, 85, 80, 75, 85, 90, 85],
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(59, 130, 246, 1)'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {
+                                    stepSize: 20,
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+                
+                // 滚动触发动画
+                const animateOnScroll = (selector, options = {}) => {
+                    gsap.to(this.shadowRoot.querySelector(selector), {
+                        ...options,
+                        scrollTrigger: {
+                            trigger: selector,
+                            start: 'top 80%',
+                            end: 'top 50%',
+                            toggleActions: 'play none none reverse'
+                        }
+                    });
+                };
+                
+                animateOnScroll('.section-title', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8
+                });
+                
+                animateOnScroll('.technical-skills', {
+                    opacity: 1,
+                    x: 0,
+                    duration: 0.8,
+                    delay: 0.2,
+                    onComplete: () => {
+                        // 填充技能条
+                        this.shadowRoot.querySelectorAll('.skill-bar-fill').forEach((bar, index) => {
+                            setTimeout(() => {
+                                const percent = bar.getAttribute('data-percent');
+                                bar.style.width = `${percent}%`;
+                            }, index * 100);
+                        });
+                    }
+                });
+                
+                animateOnScroll('.professional-skills', {
+                    opacity: 1,
+                    x: 0,
+                    duration: 0.8,
+                    delay: 0.4
+                });
+            }
+        }
+        
+        customElements.define('resume-skills', ResumeSkills);
+        
+        // 工作经历组件
+        class ResumeExperience extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+                this.shadowRoot.innerHTML = `
+                    <style>
+                        :host {
+                            display: block;
+                            padding: 10rem 5%;
+                            background-color: white;
+                        }
+                        
+                        .section-title {
+                            text-align: center;
+                            margin-bottom: 5rem;
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        
+                        .section-title h2 {
+                            font-size: 2.5rem;
+                            font-weight: 800;
+                            margin: 0 0 0.5rem 0;
+                            color: #1E293B;
+                            position: relative;
+                            display: inline-block;
+                        }
+                        
+                        .section-title h2::after {
+                            content: '';
+                            position: absolute;
+                            bottom: -10px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            width: 60px;
+                            height: 4px;
+                            background-color: #3B82F6;
+                            border-radius: 2px;
+                        }
+                        
+                        .section-title p {
+                            color: #64748B;
+                            max-width: 700px;
+                            margin: 0 auto;
+                            font-size: 1.1rem;
+                        }
+                        
+                        .experience-container {
+                            position: relative;
+                            max-width: 1200px;
+                            margin: 0 auto;
+                        }
+                        
+                        .experience-container::before {
+                            content: '';
+                            position: absolute;
+                            top: 0;
+                            bottom: 0;
+                            left: 50%;
+                            width: 4px;
+                            background-color: #E2E8F0;
+                            transform: translateX(-50%);
+                        }
+                        
+                        .timeline-item {
+                            margin-bottom: 4rem;
+                            position: relative;
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        
+                        .timeline-item:nth-child(odd) {
+                            padding-right: calc(50% + 30px);
+                            text-align: right;
+                        }
+                        
+                        .timeline-item:nth-child(even) {
+                            padding-left: calc(50% + 30px);
+                        }
+                        
+                        .timeline-content {
+                            background-color: #F8FAFC;
+                            padding: 2rem;
+                            border-radius: 10px;
+                            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+                            transition: transform 0.3s ease;
+                        }
+                        
+                        .timeline-item:hover .timeline-content {
+                            transform: translateY(-5px);
+                        }
+                        
+                        .timeline-dot {
+                            position: absolute;
+                            left: 50%;
+                            width: 20px;
+                            height: 20px;
+                            background-color: #3B82F6;
+                            border-radius: 50%;
+                            top: 2rem;
+                            transform: translateX(-50%);
+                            z-index: 1;
+                        }
+                        
+                        .timeline-date {
+                            font-size: 0.9rem;
+                            color: #3B82F6;
+                            font-weight: 600;
+                            margin-bottom: 0.5rem;
+                        }
+                        
+                        .timeline-title {
+                            font-size: 1.5rem;
+                            margin: 0 0 0.5rem 0;
+                            color: #1E293B;
+                        }
+                        
+                        .timeline-company {
+                            font-size: 1.1rem;
+                            color: #64748B;
+                            margin: 0 0 1rem 0;
+                            font-weight: 500;
+                        }
+                        
+                        .timeline-description {
+                            color: #64748B;
+                            line-height: 1.8;
+                            margin: 0;
+                        }
+                        
+                        .timeline-achievements {
+                            margin-top: 1rem;
+                            padding-left: 0;
+                            list-style-position: inside;
+                        }
+                        
+                        .timeline-achievements li {
+                            color: #64748B;
+                            margin-bottom: 0.5rem;
+                            line-height: 1.6;
+                        }
+                        
+                        @media (max-width: 768px) {
+                            .section-title h2 {
+                                font-size: 2rem;
+                            }
+                            
+                            .experience-container::before {
+                                left: 30px;
+                            }
+                            
+                            .timeline-item:nth-child(odd),
+                            .timeline-item:nth-child(even) {
+                                padding-left: 70px;
+                                padding-right: 0;
+                                text-align: left;
+                            }
+                            
+                            .timeline-dot {
+                                left: 30px;
+                            }
+                        }
+                    </style>
+                    <div id="experience" class="experience-section">
+                        <div class="section-title">
+                            <h2>Work Experience</h2>
+                            <p>My professional journey across various companies and roles, building expertise in frontend development</p>
+                        </div>
+                        
+                        <div class="experience-container">
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-date">Jan 2020 - Present</div>
+                                    <h3 class="timeline-title">Senior Frontend Developer</h3>
+                                    <p class="timeline-company">Tech Innovations Inc.</p>
+                                    <p class="timeline-description">Lead the frontend development team in creating modern, responsive web applications for enterprise clients.</p>
+                                    <ul class="timeline-achievements">
+                                        <li>Architected and implemented a component library that reduced development time by 40%</li>
+                                        <li>Migrated legacy jQuery applications to React, improving performance by 65%</li>
+                                        <li>Established frontend coding standards and best practices across the organization</li>
+                                        <li>Mentored 5 junior developers, helping them grow their technical skills</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-date">Mar 2017 - Dec 2019</div>
+                                    <h3 class="timeline-title">Frontend Developer</h3>
+                                    <p class="timeline-company">Digital Solutions Group</p>
+                                    <p class="timeline-description">Developed and maintained user interfaces for e-commerce platforms and web applications.</p>
+                                    <ul class="timeline-achievements">
+                                        <li>Implemented responsive designs that improved mobile conversion rates by 25%</li>
+                                        <li>Created interactive data visualizations using D3.js for client dashboards</li>
+                                        <li>Collaborated with UX designers to implement pixel-perfect interfaces</li>
+                                        <li>Optimized application performance, reducing load times by 35%</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-date">Jun 2015 - Feb 2017</div>
+                                    <h3 class="timeline-title">Junior Web Developer</h3>
+                                    <p class="timeline-company">WebCraft Studios</p>
+                                    <p class="timeline-description">Assisted in the development of websites and web applications for small to medium businesses.</p>
+                                    <ul class="timeline-achievements">
+                                        <li>Developed and maintained 20+ client websites using HTML, CSS, and JavaScript</li>
+                                        <li>Integrated third-party APIs for enhanced functionality</li>
+                                        <li>Worked with content management systems like WordPress and Drupal</li>
+                                        <li>Provided technical support for existing clients</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            connectedCallback() {
+                // 滚动触发动画
+                const animateOnScroll = (selector, options = {}) => {
+                    gsap.to(this.shadowRoot.querySelector(selector), {
+                        ...options,
+                        scrollTrigger: {
+                            trigger: selector,
+                            start: 'top 80%',
+                            end: 'top 50%',
+                            toggleActions: 'play none none reverse'
+                        }
+                    });
+                };
+                
+                animateOnScroll('.section-title', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8
+                });
+                
+                // 为每个时间线项目添加动画
+                const timelineItems = this.shadowRoot.querySelectorAll('.timeline-item');
+                timelineItems.forEach((item, index) => {
+                    gsap.to(item, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        delay: index * 0.2,
+                        scrollTrigger: {
+                            trigger: item,
+                            start: 'top 80%',
+                            end: 'top 50%',
+                            toggleActions: 'play none none reverse'
+                        }
+                    });
+                });
+            }
+        }
+        
+        customElements.define('resume-experience', ResumeExperience);
+        
+        // 教育背景组件
+        class ResumeEducation extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+                this.shadowRoot.innerHTML = `
+                    <style>
+                        :host {
+                            display: block;
+                            padding: 10rem 5%;
+                            background-color: #F8FAFC;
+                        }
+                        
+                        .section-title {
+                            text-align: center;
+                            margin-bottom: 5rem;
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        
+                        .section-title h2 {
+                            font-size: 2.5rem;
+                            font-weight: 800;
+                            margin: 0 0 0.5rem 0;
+                            color: #1E293B;
+                            position: relative;
+                            display: inline-block;
+                        }
+                        
+                        .section-title h2::after {
+                            content: '';
+                            position: absolute;
+                            bottom: -10px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            width: 60px;
+                            height: 4px;
+                            background-color: #3B82F6;
+                            border-radius: 2px;
+                        }
+                        
+                        .section-title p {
+                            color: #64748B;
+                            max-width: 700px;
+                            margin: 0 auto;
+                            font-size: 1.1rem;
+                        }
+                        
+                        .education-container {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                            gap: 3rem;
+                            max-width: 1200px;
+                            margin: 0 auto;
+                        }
+                        
+                        .education-card {
+                            background-color: white;
+                            border-radius: 10px;
+                            overflow: hidden;
+                            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+                            transition: transform 0.3s ease, box-shadow 0.3s ease;
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        
+                        .education-card:hover {
+                            transform: translateY(-10px);
+                            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+                        }
+                        
+                        .education-header {
+                            background-color: #3B82F6;
+                            color: white;
+                            padding: 1.5rem;
+                            text-align: center;
+                        }
+                        
+                        .education-date {
+                            font-size: 0.9rem;
+                            opacity: 0.9;
+                            margin-bottom: 0.5rem;
+                        }
+                        
+                        .education-degree {
+                            font-size: 1.5rem;
+                            margin: 0;
+                        }
+                        
+                        .education-body {
+                            padding: 2rem;
+                        }
+                        
+                        .education-institution {
+                            display: flex;
+                            align-items: center;
+                            margin-bottom: 1rem;
+                        }
+                        
+                        .education-institution img {
+                            width: 50px;
+                            height: 50px;
+                            border-radius: 50%;
+                            margin-right: 1rem;
+                            object-fit: cover;
+                        }
+                        
+                        .education-institution-info h3 {
+                            margin: 0 0 0.25rem 0;
+                            color: #1E293B;
+                            font-size: 1.25rem;
+                        }
+                        
+                        .education-institution-info p {
+                            margin: 0;
+                            color: #64748B;
+                            font-size: 0.9rem;
+                        }
+                        
+                        .education-description {
+                            color: #64748B;
+                            line-height: 1.8;
+                            margin-bottom: 1.5rem;
+                        }
+                        
+                        .education-details {
+                            list-style: none;
+                            padding: 0;
+                            margin: 0;
+                        }
+                        
+                        .education-details li {
+                            color: #64748B;
+                            margin-bottom: 0.75rem;
+                            display: flex;
+                            align-items: flex-start;
+                        }
+                        
+                        .education-details li i {
+                            color: #3B82F6;
+                            margin-right: 0.75rem;
+                            margin-top: 5px;
+                        }
+                        
+                        @media (max-width: 768px) {
+                            .section-title h2 {
+                                font-size: 2rem;
+                            }
+                            
+                            .education-container {
+                                grid-template-columns: 1fr;
+                            }
+                        }
+                    </style>
+                    <div id="education" class="education-section">
+                        <div class="section-title">
+                            <h2>Education</h2>
+                            <p>My academic background that has shaped my technical knowledge and problem-solving abilities</p>
+                        </div>
+                        
+                        <div class="education-container">
+                            <div class="education-card">
+                                <div class="education-header">
+                                    <div class="education-date">2013 - 2015</div>
+                                    <h3 class="education-degree">Master of Science in Computer Science</h3>
+                                </div>
+                                <div class="education-body">
+                                    <div class="education-institution">
+                                        <img src="https://picsum.photos/id/20/100/100" alt="University Logo">
+                                        <div class="education-institution-info">
+                                            <h3>Stanford University</h3>
+                                            <p>Stanford, CA</p>
+                                        </div>
+                                    </div>
+                                    <p class="education-description">Specialized in Human-Computer Interaction and Web Technologies with a focus on frontend development.</p>
+                                    <ul class="education-details">
+                                        <li><i class="fa fa-graduation-cap"></i> GPA: 3.8/4.0</li>
+                                        <li><i class="fa fa-trophy"></i> Recipient of Excellence in Web Design Award</li>
+                                        <li><i class="fa fa-book"></i> Thesis: "Responsive Web Interfaces for Accessibility"</li>
+                                        <li><i class="fa fa-users"></i> Member of ACM and Web Developers Club</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="education-card">
+                                <div class="education-header">
+                                    <div class="education-date">2009 - 2013</div>
+                                    <h3 class="education-degree">Bachelor of Science in Information Technology</h3>
+                                </div>
+                                <div class="education-body">
+                                    <div class="education-institution">
+                                        <img src="https://picsum.photos/id/21/100/100" alt="University Logo">
+                                        <div class="education-institution-info">
+                                            <h3>University of California, Berkeley</h3>
+                                            <p>Berkeley, CA</p>
+                                        </div>
+                                    </div>
+                                    <p class="education-description">Comprehensive study of information systems, programming, and web development fundamentals.</p>
+                                    <ul class="education-details">
+                                        <li><i class="fa fa-graduation-cap"></i> GPA: 3.7/4.0</li>
+                                        <li><i class="fa fa-trophy"></i> Dean's List (2011, 2012, 2013)</li>
+                                        <li><i class="fa fa-laptop"></i> Completed 15+ web development projects</li>
+                                        <li><i class="fa fa-users"></i> President of Web Development Student Association</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="education-card">
+                                <div class="education-header">
+                                    <div class="education-date">2015 - Present</div>
+                                    <h3 class="education-degree">Professional Certifications</h3>
+                                </div>
+                                <div class="education-body">
+                                    <div class="education-institution">
+                                        <img src="https://picsum.photos/id/22/100/100" alt="Certification Logo">
+                                        <div class="education-institution-info">
+                                            <h3>Continuous Learning</h3>
+                                            <p>Various Platforms</p>
+                                        </div>
+                                    </div>
+                                    <p class="education-description">Committed to lifelong learning with these professional certifications:</p>
+                                    <ul class="education-details">
+                                        <li><i class="fa fa-certificate"></i> Advanced React Development - Udemy</li>
+                                        <li><i class="fa fa-certificate"></i> UI/UX Design Specialization - Coursera</li>
+                                        <li><i class="fa fa-certificate"></i> JavaScript ES6+ Masterclass - Pluralsight</li>
+                                        <li><i class="fa fa-certificate"></i> Web Performance Optimization - Google</li>
+                                        <li><i class="fa fa-certificate"></i> Accessibility for Web Developers - A11Y Project</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            connectedCallback() {
+                // 滚动触发动画
+                const animateOnScroll = (selector, options = {}) => {
+                    gsap.to(this.shadowRoot.querySelector(selector), {
+                        ...options,
+                        scrollTrigger: {
+                            trigger: selector,
+                            start: 'top 80%',
+                            end: 'top 50%',
+                            toggleActions: 'play none none reverse'
+                        }
+                    });
+                };
+                
+                animateOnScroll('.section-title', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8
+                });
+                
+                // 为每个教育卡片添加动画
+                const educationCards = this.shadowRoot.querySelectorAll('.education-card');
+                educationCards.forEach((card, index) => {
+                    gsap.to(card, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        delay: index * 0.2,
+                        scrollTrigger: {
+                            trigger: card,
+                            start: 'top 80%',
+                            end: 'top 50%',
+                            toggleActions: 'play none none reverse'
+                        }
+                    });
+                });
+            }
+        }
+        
+        customElements.define('resume-education', ResumeEducation);
+        
+        // 项目展示组件
+        class ResumeProjects extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+                this.shadowRoot.innerHTML = `
+                    <style>
+                        :host {
+                            display: block;
+                            padding: 10rem 5%;
+                            background-color: white;
+                        }
+                        
+                        .section-title {
+                            text-align: center;
+                            margin-bottom: 5rem;
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        
+                        .section-title h2 {
+                            font-size: 2.5rem;
+                            font-weight: 800;
+                            margin: 0 0 0.5rem 0;
+                            color: #1E293B;
+                            position: relative;
+                            display: inline-block;
+                        }
+                        
+                        .section-title h2::after {
+                            content: '';
+                            position: absolute;
+                            bottom: -10px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            width: 60px;
+                            height: 4px;
+                            background-color: #3B82F6;
+                            border-radius: 2px;
+                        }
+                        
+                        .section-title p {
+                            color: #64748B;
+                            max-width: 700px;
+                            margin: 0 auto;
+                            font-size: 1.1rem;
+                        }
+                        
+                        .projects-filter {
+                            display: flex;
+                            justify-content: center;
+                            flex-wrap: wrap;
+                            gap: 1rem;
+                            margin-bottom: 4rem;
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        
+                        .filter-btn {
+                            background-color: #F1F5F9;
+                            border: none;
+                            padding: 0.5rem 1.5rem;
+                            border-radius: 30px;
+                            font-weight: 600;
+                            color: #64748B;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                        }
+                        
+                        .filter-btn.active {
+                            background-color: #3B82F6;
+                            color: white;
+                        }
+                        
+                        .filter-btn:hover:not(.active) {
+                            background-color: #E2E8F0;
+                            color: #1E293B;
+                        }
+                        
+                        .projects-container {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                            gap: 3rem;
+                            max-width: 1200px;
+                            margin: 0 auto;
+                        }
+                        
+                        .project-card {
+                            border-radius: 10px;
+                            overflow: hidden;
+                            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+                            background-color: white;
+                            transition: transform 0.3s ease, box-shadow 0.3s ease;
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        
+                        .project-card:hover {
+                            transform: translateY(-10px);
+                            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+                        }
+                        
+                        .project-image {
+                            position: relative;
+                            height: 200px;
+                            overflow: hidden;
+                        }
+                        
+                        .project-image img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                            transition: transform 0.5s ease;
+                        }
+                        
+                        .project-card:hover .project-image img {
+                            transform: scale(1.1);
+                        }
+                        
+                        .project-category {
+                            position: absolute;
+                            top: 1rem;
+                            right: 1rem;
+                            background-color: #3B82F6;
+                            color: white;
+                            padding: 0.25rem 0.75rem;
+                            border-radius: 30px;
+                            font-size: 0.8rem;
+                            font-weight: 600;
+                        }
+                        
+                        .project-content {
+                            padding: 1.5rem;
+                        }
+                        
+                        .project-title {
+                            font-size: 1.25rem;
+                            margin: 0 0 0.5rem 0;
+                            color: #1E293B;
+                        }
+                        
+                        .project-description {
+                            color: #64748B;
+                            margin: 0 0 1.5rem 0;
+                            line-height: 1.6;
+                            font-size: 0.95rem;
+                        }
+                        
+                        .project-tags {
+                            display: flex;
+                            flex-wrap: wrap;
+                            gap: 0.5rem;
+                            margin-bottom: 1.5rem;
+                        }
+                        
+                        .project-tag {
+                            background-color: #F1F5F9;
+                            color: #64748B;
+                            padding: 0.25rem 0.75rem;
+                            border-radius: 30px;
+                            font-size: 0.8rem;
+                        }
+                        
+                        .project-links {
+                            display: flex;
+                            gap: 1rem;
+                        }
+                        
+                        .project-link {
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 50%;
+                            background-color: #F1F5F9;
+                            color: #64748B;
+                            transition: all 0.3s ease;
+                            text-decoration: none;
+                        }
+                        
+                        .project-link:hover {
+                            background-color: #3B82F6;
+                            color: white;
+                        }
+                        
+                        @media (max-width: 768px) {
+                            .section-title h2 {
+                                font-size: 2rem;
+                            }
+                            
+                            .projects-container {
+                                grid-template-columns: 1fr;
+                            }
+                        }
+                    </style>
+                    <div id="projects" class="projects-section">
+                        <div class="section-title">
+                            <h2>Featured Projects</h2>
+                            <p>Selected work that showcases my skills in frontend development and UI/UX design</p>
+                        </div>
+                        
+                        <div class="projects-filter">
+                            <button class="filter-btn active" data-filter="all">All Projects</button>
+                            <button class="filter-btn" data-filter="web">Web Apps</button>
+                            <button class="filter-btn" data-filter="mobile">Mobile Apps</button>
+                            <button class="filter-btn" data-filter="ui">UI Design</button>
+                        </div>
+                        
+                        <div class="projects-container">
+                            <div class="project-card" data-category="web">
+                                <div class="project-image">
+                                    <img src="https://picsum.photos/id/30/600/400" alt="E-commerce Platform">
+                                    <span class="project-category">Web App</span>
+                                </div>
+                                <div class="project-content">
+                                    <h3 class="project-title">E-commerce Platform</h3>
+                                    <p class="project-description">A full-featured e-commerce platform with responsive design, shopping cart, and payment integration.</p>
+                                    <div class="project-tags">
+                                        <span class="project-tag">React</span>
+                                        <span class="project-tag">Redux</span>
+                                        <span class="project-tag">Stripe</span>
+                                        <span class="project-tag">Node.js</span>
+                                    </div>
+                                    <div class="project-links">
+                                        <a href="#" class="project-link" aria-label="Live Demo"><i class="fa fa-external-link"></i></a>
+                                        <a href="#" class="project-link" aria-label="GitHub"><i class="fa fa-github"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="project-card" data-category="mobile">
+                                <div class="project-image">
+                                    <img src="https://picsum.photos/id/31/600/400" alt="Fitness Tracker App">
+                                    <span class="project-category">Mobile App</span>
+                                </div>
+                                <div class="project-content">
+                                    <h3 class="project-title">Fitness Tracker App</h3>
+                                    <p class="project-description">A mobile app for tracking workouts, nutrition, and fitness goals with data visualization.</p>
+                                    <div class="project-tags">
+                                        <span class="project-tag">React Native</span>
+                                        <span class="project-tag">Firebase</span>
+                                        <span class="project-tag">D3.js</span>
+                                    </div>
+                                    <div class="project-links">
+                                        <a href="#" class="project-link" aria-label="Live Demo"><i class="fa fa-external-link"></i></a>
+                                        <a href="#" class="project-link" aria-label="GitHub"><i class="fa fa-github"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="project-card" data-category="ui">
+                                <div class="project-image">
+                                    <img src="https://picsum.photos/id/32/600/400" alt="Banking Dashboard UI">
+                                    <span class="project-category">UI Design</span>
+                                </div>
+                                <div class="project-content">
+                                    <h3 class="project-title">Banking Dashboard UI</h3>
+                                    <p class="project-description">A comprehensive banking dashboard UI with account management and financial insights.</p>
+                                    <div class="project-tags">
+                                        <span class="project-tag">Figma</span>
+                                        <span class="project-tag">UI/UX</span>
+                                        <span class="project-tag">Prototyping</span>
+                                    </div>
+                                    <div class="project-links">
+                                        <a href="#" class="project-link" aria-label="Live Demo"><i class="fa fa-external-link"></i></a>
+                                        <a href="#" class="project-link" aria-label="Dribbble"><i class="fa fa-dribbble"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="project-card" data-category="web">
+                                <div class="project-image">
+                                    <img src="https://picsum.photos/id/33/600/400" alt="Project Management Tool">
+                                    <span class="project-category">Web App</span>
+                                </div>
+                                <div class="project-content">
+                                    <h3 class="project-title">Project Management Tool</h3>
+                                    <p class="project-description">A collaborative project management tool with task boards, timelines, and team communication.</p>
+                                    <div class="project-tags">
+                                        <span class="project-tag">Vue.js</span>
+                                        <span class="project-tag">Firebase</span>
+                                        <span class="project-tag">Socket.io</span>
+                                    </div>
+                                    <div class="project-links">
+                                        <a href="#" class="project-link" aria-label="Live Demo"><i class="fa fa-external-link"></i></a>
+                                        <a href="#" class="project-link" aria-label="GitHub"><i class="fa fa-github"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="project-card" data-category="ui">
+                                <div class="project-image">
+                                    <img src="https://picsum.photos/id/34/600/400" alt="Travel App UI">
+                                    <span class="project-category">UI Design</span>
+                                </div>
+                                <div class="project-content">
+                                    <h3 class="project-title">Travel App UI</h3>
+                                    <p class="project-description">A visually stunning travel app UI with destination discovery and booking functionality.</p>
+                                    <div class="project-tags">
+                                        <span class="project-tag">Adobe XD</span>
+                                        <span class="project-tag">UI/UX</span>
+                                        <span class="project-tag">Animation</span>
+                                    </div>
+                                    <div class="project-links">
+                                        <a href="#" class="project-link" aria-label="Live Demo"><i class="fa fa-external-link"></i></a>
+                                        <a href="#" class="project-link" aria-label="Dribbble"><i class="fa fa-dribbble"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="project-card" data-category="mobile">
+                                <div class="project-image">
+                                    <img src="https://picsum.photos/id/35/600/400" alt="Recipe Finder App">
+                                    <span class="project-category">Mobile App</span>
+                                </div>
+                                <div class="project-content">
+                                    <h3 class="project-title">Recipe Finder App</h3>
+                                    <p class="project-description">A mobile app for discovering recipes based on ingredients, dietary preferences, and cooking time.</p>
+                                    <div class="project-tags">
+                                        <span class="project-tag">Flutter</span>
+                                        <span class="project-tag">Spoonacular API</span>
+                                        <span class="project-tag">Local Storage</span>
+                                    </div>
+                                    <div class="project-links">
+                                        <a href="#" class="project-link" aria-label="Live Demo"><i class="fa fa-external-link"></i></a>
+                                        <a href="#" class="project-link" aria-label="GitHub"><i class="fa fa-github"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            connectedCallback() {
+                // 项目筛选功能
+                const filterButtons = this.shadowRoot.querySelectorAll('.filter-btn');
+                const projectCards = this.shadowRoot.querySelectorAll('.project-card');
+                
+                filterButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        // 更新活跃按钮状态
+                        filterButtons.forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+                        
+                        const filter = button.getAttribute('data-filter');
+                        
+                        // 筛选项目
+                        projectCards.forEach(card => {
+                            if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                                card.style.display = 'block';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+                    });
+                });
+                
+                // 滚动触发动画
+                const animateOnScroll = (selector, options = {}) => {
+                    gsap.to(this.shadowRoot.querySelector(selector), {
+                        ...options,
+                        scrollTrigger: {
+                            trigger: selector,
+                            start: 'top 80%',
+                            end: 'top 50%',
+                            toggleActions: 'play none none reverse'
+                        }
+                    });
+                };
+                
+                animateOnScroll('.section-title', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8
+                });
+                
+                animateOnScroll('.projects-filter', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    delay: 0.2
+                });
+                
+                // 为每个项目卡片添加动画
+                projectCards.forEach((card, index) => {
+                    gsap.to(card, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        delay: index * 0.1,
+                        scrollTrigger: {
+                            trigger: card,
+                            start: 'top 80%',
+                            end: 'top 50%',
+                            toggleActions: 'play none none reverse'
+                        }
+                    });
+                });
+            }
+        }
+        
+        customElements.define('resume-projects', ResumeProjects);
+        
+        // 联系方式组件
+        class ResumeContact extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+                this.shadowRoot.innerHTML = `
+                    <style>
+                        :host {
+                            display: block;
+                            padding: 10rem 5%;
+                            background-color: #F8FAFC;
+                        }
+                        
+                        .section-title {
+                            text-align: center;
+                            margin-bottom: 5rem;
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        
+                        .section-title h2 {
+                            font-size: 2.5rem;
+                            font-weight: 800;
+                            margin: 0 0 0.5rem 0;
+                            color: #1E293B;
+                            position: relative;
+                            display: inline-block;
+                        }
+                        
+                        .section-title h2::after {
+                            content: '';
+                            position: absolute;
+                            bottom: -10px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            width: 60px;
+                            height: 4px;
+                            background-color: #3B82F6;
+                            border-radius: 2px;
+                        }
+                        
+                        .section-title p {
+                            color: #64748B;
+                            max-width: 700px;
+                            margin: 0 auto;
+                            font-size: 1.1rem;
+                        }
+                        
+                        .contact-container {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 5rem;
+                            max-width: 1200px;
+                            margin: 0 auto;
+                        }
+                        
+                        .contact-info {
+                            opacity: 0;
+                            transform: translateX(-30px);
+                        }
+                        
+                        .contact-info h3 {
+                            font-size: 1.75rem;
+                            margin: 0 0 2rem 0;
+                            color: #1E293B;
+                        }
+                        
+                        .contact-description {
+                            color: #64748B;
+                            line-height: 1.8;
+                            margin: 0 0 3rem 0;
+                        }
+                        
+                        .contact-details {
+                            margin-bottom: 3rem;
+                        }
+                        
+                        .contact-item {
+                            display: flex;
+                            align-items: flex-start;
+                            margin-bottom: 1.5rem;
+                        }
+                        
+                        .contact-icon {
+                            width: 50px;
+                            height: 50px;
+                            border-radius: 50%;
+                            background-color: #EFF6FF;
+                            color: #3B82F6;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 1.25rem;
+                            margin-right: 1.5rem;
+                            flex-shrink: 0;
+                        }
+                        
+                        .contact-details-info h4 {
+                            margin: 0 0 0.25rem 0;
+                            color: #1E293B;
+                            font-size: 1.1rem;
+                        }
+                        
+                        .contact-details-info p {
+                            margin: 0;
+                            color: #64748B;
+                        }
+                        
+                        .contact-social {
+                            display: flex;
+                            gap: 1rem;
+                        }
+                        
+                        .contact-social-link {
+                            width: 45px;
+                            height: 45px;
+                            border-radius: 50%;
+                            background-color: #EFF6FF;
+                            color: #3B82F6;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 1.25rem;
+                            transition: all 0.3s ease;
+                            text-decoration: none;
+                        }
+                        
+                        .contact-social-link:hover {
+                            background-color: #3B82F6;
+                            color: white;
+                            transform: translateY(-5px);
+                        }
+                        
+                        .contact-form {
+                            background-color: white;
+                            padding: 2.5rem;
+                            border-radius: 10px;
+                            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+                            opacity: 0;
+                            transform: translateX(30px);
+                        }
+                        
+                        .contact-form h3 {
+                            font-size: 1.75rem;
+                            margin: 0 0 2rem 0;
+                            color: #1E293B;
+                        }
+                        
+                        .form-group {
+                            margin-bottom: 1.5rem;
+                        }
+                        
+                        .form-group label {
+                            display: block;
+                            margin-bottom: 0.5rem;
+                            color: #1E293B;
+                            font-weight: 500;
+                        }
+                        
+                        .form-control {
+                            width: 100%;
+                            padding: 0.75rem 1rem;
+                            border: 1px solid #E2E8F0;
+                            border-radius: 5px;
+                            font-size: 1rem;
+                            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+                        }
+                        
+                        .form-control:focus {
+                            outline: none;
+                            border-color: #3B82F6;
+                            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                        }
+                        
+                        textarea.form-control {
+                            min-height: 150px;
+                            resize: vertical;
+                        }
+                        
+                        .submit-button {
+                            background-color: #3B82F6;
+                            color: white;
+                            border: none;
+                            padding: 0.75rem 2rem;
+                            border-radius: 5px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            display: inline-flex;
+                            align-items: center;
+                        }
+                        
+                        .submit-button i {
+                            margin-right: 0.5rem;
+                        }
+                        
+                        .submit-button:hover {
+                            background-color: #2563EB;
+                            transform: translateY(-3px);
+                            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+                        }
+                        
+                        @media (max-width: 992px) {
+                            .contact-container {
+                                grid-template-columns: 1fr;
+                            }
+                        }
+                        
+                        @media (max-width: 768px) {
+                            .section-title h2 {
+                                font-size: 2rem;
+                            }
+                            
+                            .contact-form {
+                                padding: 1.5rem;
+                            }
+                        }
+                    </style>
+                    <div id="contact" class="contact-section">
+                        <div class="section-title">
+                            <h2>Get In Touch</h2>
+                            <p>Interested in working together? Feel free to reach out and I'll get back to you as soon as possible</p>
+                        </div>
+                        
+                        <div class="contact-container">
+                            <div class="contact-info">
+                                <h3>Contact Information</h3>
+                                <p class="contact-description">I'm always open to discussing new projects, creative ideas or opportunities to be part of your vision.</p>
+                                
+                                <div class="contact-details">
+                                    <div class="contact-item">
+                                        <div class="contact-icon">
+                                            <i class="fa fa-map-marker"></i>
+                                        </div>
+                                        <div class="contact-details-info">
+                                            <h4>Location</h4>
+                                            <p>San Francisco, California, USA</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="contact-item">
+                                        <div class="contact-icon">
+                                            <i class="fa fa-envelope"></i>
+                                        </div>
+                                        <div class="contact-details-info">
+                                            <h4>Email</h4>
+                                            <p>john.doe@example.com</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="contact-item">
+                                        <div class="contact-icon">
+                                            <i class="fa fa-phone"></i>
+                                        </div>
+                                        <div class="contact-details-info">
+                                            <h4>Phone</h4>
+                                            <p>+1 (555) 123-4567</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="contact-item">
+                                        <div class="contact-icon">
+                                            <i class="fa fa-clock-o"></i>
+                                        </div>
+                                        <div class="contact-details-info">
+                                            <h4>Working Hours</h4>
+                                            <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="contact-social">
+                                    <a href="#" class="contact-social-link" aria-label="GitHub"><i class="fa fa-github"></i></a>
+                                    <a href="#" class="contact-social-link" aria-label="LinkedIn"><i class="fa fa-linkedin"></i></a>
+                                    <a href="#" class="contact-social-link" aria-label="Twitter"><i class="fa fa-twitter"></i></a>
+                                    <a href="#" class="contact-social-link" aria-label="Dribbble"><i class="fa fa-dribbble"></i></a>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-form">
+                                <h3>Send Me a Message</h3>
+                                <form>
+                                    <div class="form-group">
+                                        <label for="name">Your Name</label>
+                                        <input type="text" id="name" class="form-control" placeholder="John Smith" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="email">Your Email</label>
+                                        <input type="email" id="email" class="form-control" placeholder="john@example.com" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="subject">Subject</label>
+                                        <input type="text" id="subject" class="form-control" placeholder="Project Inquiry">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="message">Your Message</label>
+                                        <textarea id="message" class="form-control" placeholder="Tell me about your project..." required></textarea>
+                                    </div>
+                                    
+                                    <button type="submit" class="submit-button">
+                                        <i class="fa fa-paper-plane"></i>
+                                        Send Message
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            connectedCallback() {
+                // 滚动触发动画
+                const animateOnScroll = (selector, options = {}) => {
+                    gsap.to(this.shadowRoot.querySelector(selector), {
+                        ...options,
+                        scrollTrigger: {
+                            trigger: selector,
+                            start: 'top 80%',
+                            end: 'top 50%',
+                            toggleActions: 'play none none reverse'
+                        }
+                    });
+                };
+                
+                animateOnScroll('.section-title', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8
+                });
+                
+                animateOnScroll('.contact-info', {
+                    opacity: 1,
+                    x: 0,
+                    duration: 0.8,
+                    delay: 0.2
+                });
+                
+                animateOnScroll('.contact-form', {
+                    opacity: 1,
+                    x: 0,
+                    duration: 0.8,
+                    delay: 0.4
+                });
+                
+                // 表单提交处理
+                const form = this.shadowRoot.querySelector('form');
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    // 这里可以添加表单提交逻辑
+                    alert('Thank you for your message! I\'ll get back to you soon.');
+                    form.reset();
+                });
+            }
+        }
+        
+        customElements.define('resume-contact', ResumeContact);
+        
+        // 页脚组件
+        class ResumeFooter extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+                this.shadowRoot.innerHTML = `
+                    <style>
+                        :host {
+                            display: block;
+                            background-color: #1E293B;
+                            color: white;
+                            padding: 3rem 5% 1rem;
+                        }
+                        
+                        .footer-container {
+                            max-width: 1200px;
+                            margin: 0 auto;
+                        }
+                        
+                        .footer-top {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                            gap: 3rem;
+                            margin-bottom: 3rem;
+                        }
+                        
+                        .footer-logo {
+                            font-size: 1.5rem;
+                            font-weight: 700;
+                            color: white;
+                            margin-bottom: 1rem;
+                        }
+                        
+                        .footer-description {
+                            color: #94A3B8;
+                            line-height: 1.6;
+                            margin-bottom: 1.5rem;
+                        }
+                        
+                        .footer-social {
+                            display: flex;
+                            gap: 1rem;
+                        }
+                        
+                        .footer-social-link {
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 50%;
+                            background-color: #334155;
+                            color: #94A3B8;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            transition: all 0.3s ease;
+                            text-decoration: none;
+                        }
+                        
+                        .footer-social-link:hover {
+                            background-color: #3B82F6;
+                            color: white;
+                        }
+                        
+                        .footer-title {
+                            font-size: 1.25rem;
+                            font-weight: 600;
+                            margin-bottom: 1.5rem;
+                            position: relative;
+                            padding-bottom: 0.5rem;
+                        }
+                        
+                        .footer-title::after {
+                            content: '';
+                            position: absolute;
+                            bottom: 0;
+                            left: 0;
+                            width: 40px;
+                            height: 2px;
+                            background-color: #3B82F6;
+                        }
+                        
+                        .footer-links {
+                            list-style: none;
+                            padding: 0;
+                            margin: 0;
+                        }
+                        
+                        .footer-links li {
+                            margin-bottom: 0.75rem;
+                        }
+                        
+                        .footer-links a {
+                            color: #94A3B8;
+                            text-decoration: none;
+                            transition: color 0.3s ease;
+                            display: flex;
+                            align-items: center;
+                        }
+                        
+                        .footer-links a i {
+                            margin-right: 0.5rem;
+                            color: #3B82F6;
+                            font-size: 0.8rem;
+                        }
+                        
+                        .footer-links a:hover {
+                            color: white;
+                        }
+                        
+                        .footer-contact-item {
+                            display: flex;
+                            align-items: flex-start;
+                            margin-bottom: 1rem;
+                        }
+                        
+                        .footer-contact-item i {
+                            color: #3B82F6;
+                            margin-right: 1rem;
+                            margin-top: 4px;
+                        }
+                        
+                        .footer-contact-item p {
+                            color: #94A3B8;
+                            margin: 0;
+                        }
+                        
+                        .footer-bottom {
+                            padding-top: 2rem;
+                            border-top: 1px solid #334155;
+                            text-align: center;
+                        }
+                        
+                        .footer-copyright {
+                            color: #94A3B8;
+                            margin: 0;
+                            font-size: 0.9rem;
+                        }
+                        
+                        .footer-copyright a {
+                            color: #3B82F6;
+                            text-decoration: none;
+                        }
+                        
+                        .footer-copyright a:hover {
+                            text-decoration: underline;
+                        }
+                        
+                        .scroll-top {
+                            position: fixed;
+                            bottom: 2rem;
+                            right: 2rem;
+                            width: 45px;
+                            height: 45px;
+                            border-radius: 50%;
+                            background-color: #3B82F6;
+                            color: white;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 1.25rem;
+                            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            opacity: 0;
+                            visibility: hidden;
+                            z-index: 999;
+                        }
+                        
+                        .scroll-top.active {
+                            opacity: 1;
+                            visibility: visible;
+                        }
+                        
+                        .scroll-top:hover {
+                            transform: translateY(-5px);
+                            background-color: #2563EB;
+                        }
+                        
+                        @media (max-width: 768px) {
+                            .footer-top {
+                                grid-template-columns: 1fr;
+                            }
+                        }
+                    </style>
+                    <div class="footer-container">
+                        <div class="footer-top">
+                            <div class="footer-about">
+                                <div class="footer-logo">John Doe</div>
+                                <p class="footer-description">Senior Frontend Developer with a passion for creating beautiful, functional, and user-centered digital experiences.</p>
+                                <div class="footer-social">
+                                    <a href="#" class="footer-social-link" aria-label="GitHub"><i class="fa fa-github"></i></a>
+                                    <a href="#" class="footer-social-link" aria-label="LinkedIn"><i class="fa fa-linkedin"></i></a>
+                                    <a href="#" class="footer-social-link" aria-label="Twitter"><i class="fa fa-twitter"></i></a>
+                                    <a href="#" class="footer-social-link" aria-label="Dribbble"><i class="fa fa-dribbble"></i></a>
+                                </div>
+                            </div>
+                            
+                            <div class="footer-quick-links">
+                                <h3 class="footer-title">Quick Links</h3>
+                                <ul class="footer-links">
+                                    <li><a href="#about"><i class="fa fa-angle-right"></i> About</a></li>
+                                    <li><a href="#skills"><i class="fa fa-angle-right"></i> Skills</a></li>
+                                    <li><a href="#experience"><i class="fa fa-angle-right"></i> Experience</a></li>
+                                    <li><a href="#education"><i class="fa fa-angle-right"></i> Education</a></li>
+                                    <li><a href="#projects"><i class="fa fa-angle-right"></i> Projects</a></li>
+                                    <li><a href="#contact"><i class="fa fa-angle-right"></i> Contact</a></li>
+                                </ul>
+                            </div>
+                            
+                            <div class="footer-contact">
+                                <h3 class="footer-title">Contact Me</h3>
+                                <div class="footer-contact-item">
+                                    <i class="fa fa-map-marker"></i>
+                                    <p>San Francisco, California, USA</p>
+                                </div>
+                                <div class="footer-contact-item">
+                                    <i class="fa fa-envelope"></i>
+                                    <p>john.doe@example.com</p>
+                                </div>
+                                <div class="footer-contact-item">
+                                    <i class="fa fa-phone"></i>
+                                    <p>+1 (555) 123-4567</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-bottom">
+                            <p class="footer-copyright">&copy; 2023 John Doe. All rights reserved. Designed & Developed with <i class="fa fa-heart text-red-500"></i></p>
+                        </div>
+                    </div>
+                    
+                    <div class="scroll-top" aria-label="Scroll to top">
+                        <i class="fa fa-chevron-up"></i>
+                    </div>
+                `;
+            }
+            
+            connectedCallback() {
+                // 滚动到顶部功能
+                const scrollTopBtn = this.shadowRoot.querySelector('.scroll-top');
+                
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 500) {
+                        scrollTopBtn.classList.add('active');
+                    } else {
+                        scrollTopBtn.classList.remove('active');
+                    }
+                });
+                
+                scrollTopBtn.addEventListener('click', () => {
+                    gsap.to(window, {
+                        scrollTo: 0,
+                        duration: 0.8,
+                        ease: 'power2.inOut'
+                    });
+                });
+            }
+        }
+        
+        customElements.define('resume-footer', ResumeFooter);
+    </script>
+</body>
+</html>
